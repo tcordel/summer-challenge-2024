@@ -1,9 +1,14 @@
 package fr.tcordel;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import fr.tcordel.mini.HurdleRace;
 
 public class Player {
 
@@ -19,7 +24,6 @@ public class Player {
 			for (int i = 0; i < 3; i++) {
 				String scoreInfo = in.nextLine();
 			}
-			List<Integer> myReg = new ArrayList<>();
 			List<String> gpus = new ArrayList<>();
 			for (int i = 0; i < nbGames; i++) {
 				String gpu = in.next();
@@ -44,36 +48,48 @@ public class Player {
 				};
 				int reg6 = in.nextInt();
 				if (!ended && stuntCounter == 0) {
-					gpus.add(gpu);
-					myReg.add(reg);
+					gpus.add(gpu.substring(reg));
 				}
-				System.err.println("Frame %d, position %d and stunt %d".formatted(i, reg, stuntCounter));
+				// System.err
+				// 		.println("Frame %d, gpu %s and stunt %d".formatted(i, gpus.get(gpus.size() - 1), stuntCounter));
 			}
 			in.nextLine();
 			if (gpus.isEmpty()) {
 				continue;
 			}
-			int closestTrap = Integer.MAX_VALUE;
-			for (int i = 0; i < gpus.size(); i++) {
-				Integer reg = myReg.get(i);
-				String subpath = gpus.get(i).substring(reg);
-				int trap = subpath.indexOf("#");
-				if (trap == 0 && subpath.length() > 1) {
-					trap = subpath.indexOf("#", 1);
-				}
-				System.err.println("Path %s, at index %d, trap... %d".formatted(subpath, reg, trap));
-				if (trap > 0 && trap < closestTrap) {
-					closestTrap = trap;
-				}
-			}
-			String action = switch (closestTrap) {
-				case 1 -> "UP";
-				case 2 -> "LEFT";
-				case 3 -> "DOWN";
-				default -> "RIGHT";
-			};
-			System.out.println(action);
+			Action selected = Stream.of(Action.values())
+					.map(action -> new ActionScore(action, getScore(action, gpus)))
+			.peek(action -> System.err.println("Action %s with score %d".formatted(action.action(), action.score())))
+					.max(Comparator
+				.comparingInt(ActionScore::score)
+			.thenComparingInt(as -> HurdleRace.actionScore(as.action())))
+					.map(ActionScore::action)
+					.orElse(Action.RIGHT);
+			System.out.println(selected);
 		}
+	}
+
+	private static int getScore(Action action, List<String> gpus) {
+		int serchOffset = switch (action) {
+			case UP -> 2;
+			case LEFT, DOWN, RIGHT -> 1;
+		};
+		int move = switch (action) {
+			case UP, DOWN -> 2;
+			case LEFT -> 1;
+			case RIGHT -> 3;
+		};
+		return (int) gpus.stream()
+				.filter(gpu -> {
+					int nextTrap = gpu.indexOf("#", serchOffset);
+					System.err.println("nexttrap for action %s on gpu %s is %d".formatted(action, gpu, nextTrap));
+					return nextTrap == -1 || nextTrap > move;
+				})
+				.count();
+	}
+
+	record ActionScore (Action action,
+		int score) {
 	}
 
 	String message;
