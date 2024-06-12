@@ -1,100 +1,62 @@
 package fr.tcordel;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import fr.tcordel.mini.HurdleRace;
+import fr.tcordel.mini.strats.Strategy;
 
 public class Player {
 
+	public static int playerIdx = 0;
+	public static List<Player> players = new ArrayList<>();
+
 	public static void main(String args[]) {
 		Scanner in = new Scanner(System.in);
-		int playerIdx = in.nextInt();
+		playerIdx = in.nextInt();
 		int nbGames = in.nextInt();
+
+		for (int i = 0; i < 3; i++) {
+			Player player = new Player();
+			player.init(nbGames);
+			players.add(player);
+		}
 		if (in.hasNextLine()) {
 			in.nextLine();
 		}
 
+		// game loop
 		while (true) {
 			for (int i = 0; i < 3; i++) {
-				String scoreInfo = in.nextLine();
+				players.get(i).refresh(in.nextLine());
 			}
-			List<String> gpus = new ArrayList<>();
+			List<Strategy> strategies = new ArrayList<>();
 			for (int i = 0; i < nbGames; i++) {
 				String gpu = in.next();
-				boolean ended = gpu.equals("GAME_OVER");
 				int reg0 = in.nextInt();
 				int reg1 = in.nextInt();
 				int reg2 = in.nextInt();
-				int reg = switch (playerIdx) {
-					case 0 -> reg0;
-					case 1 -> reg1;
-					case 2 -> reg2;
-					default -> throw new IllegalArgumentException("Unexpected value: " + playerIdx);
-				};
 				int reg3 = in.nextInt();
 				int reg4 = in.nextInt();
 				int reg5 = in.nextInt();
-				int stuntCounter = switch (playerIdx) {
-					case 0 -> reg3;
-					case 1 -> reg4;
-					case 2 -> reg5;
-					default -> throw new IllegalArgumentException("Unexpected value: " + playerIdx);
-				};
 				int reg6 = in.nextInt();
-				if (!ended && stuntCounter == 0) {
-					gpus.add(gpu.substring(reg));
-				}
-				// System.err
-				// 		.println("Frame %d, gpu %s and stunt %d".formatted(i, gpus.get(gpus.size() - 1), stuntCounter));
+				strategies.add(Strategy.builder(i, gpu, reg0, reg1, reg2, reg3, reg4, reg5, reg6));
 			}
 			in.nextLine();
-			if (gpus.isEmpty()) {
-				continue;
-			}
-			Action selected = Stream.of(Action.values())
-					.map(action -> new ActionScore(action, getScore(action, gpus)))
-			.peek(action -> System.err.println("Action %s with score %d".formatted(action.action(), action.score())))
-					.max(Comparator
-				.comparingInt(ActionScore::score)
-			.thenComparingInt(as -> HurdleRace.actionScore(as.action())))
-					.map(ActionScore::action)
-					.orElse(Action.RIGHT);
-			System.out.println(selected);
+
+			StrategySupervisor supervisor = new StrategySupervisor(strategies);
+			Action selectedAction = supervisor.process();
+			// Write an action using System.out.println()
+			// To debug: System.err.println("Debug messages...");
+
+			System.out.println(selectedAction);
 		}
-	}
-
-	private static int getScore(Action action, List<String> gpus) {
-		int serchOffset = switch (action) {
-			case UP -> 2;
-			case LEFT, DOWN, RIGHT -> 1;
-		};
-		int move = switch (action) {
-			case UP, DOWN -> 2;
-			case LEFT -> 1;
-			case RIGHT -> 3;
-		};
-		return (int) gpus.stream()
-				.filter(gpu -> {
-					int nextTrap = gpu.indexOf("#", serchOffset);
-					System.err.println("nexttrap for action %s on gpu %s is %d".formatted(action, gpu, nextTrap));
-					return nextTrap == -1 || nextTrap > move;
-				})
-				.count();
-	}
-
-	record ActionScore (Action action,
-		int score) {
 	}
 
 	String message;
 	Action action;
 	int[][] medals;
+	int totalPoints;
 
 	public Player() {
 	}
@@ -114,6 +76,20 @@ public class Player {
 	public void reset() {
 		this.message = null;
 		this.action = null;
+	}
+
+	public void refresh(String scoreInfo) {
+		String[] scores = scoreInfo.split(" ");
+		totalPoints = Integer.parseInt(scores[0]);
+		medals[0][0] = Integer.parseInt(scores[1]);
+		medals[0][1] = Integer.parseInt(scores[2]);
+		medals[0][2] = Integer.parseInt(scores[3]);
+		medals[1][0] = Integer.parseInt(scores[4]);
+		medals[1][1] = Integer.parseInt(scores[5]);
+		medals[1][2] = Integer.parseInt(scores[6]);
+		medals[2][0] = Integer.parseInt(scores[7]);
+		medals[2][1] = Integer.parseInt(scores[8]);
+		medals[2][2] = Integer.parseInt(scores[9]);
 	}
 
 	public void setMessage(String message) {
@@ -160,8 +136,8 @@ public class Player {
 		return minigameScores.stream().collect(Collectors.joining(" * ")) + " = " + getPoints();
 	}
 
-    public boolean isActive() {
+	public boolean isActive() {
 		return true;
-    }
+	}
 
 }

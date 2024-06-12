@@ -170,14 +170,5 @@ public class HurdleRace extends MiniGame {
         return "Hurdle Race";
     }
 
-    public static int actionScore(Action action) {
-		return switch (action) {
-			case LEFT -> 1;
-			case DOWN -> 2;
-			case UP -> 3;
-			case RIGHT -> 4;
-		};
-	}
-
 
 }

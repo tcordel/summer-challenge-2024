@@ -89,6 +89,16 @@ public class Archery extends MiniGame {
                 continue;
             }
             int offset = wind.get(0);
+			int[] cursor = cursors.get(i);
+			applyWind(a, cursor, offset);
+        }
+
+        wind.remove(0);
+        arrows = isGameOver();
+    }
+
+	public void applyWind(Action a, int[] cursor, int offset) {
+
             int dx = 0;
             int dy = 0;
             if (a == Action.DOWN) {
@@ -100,7 +110,6 @@ public class Archery extends MiniGame {
             } else {
                 dy = -offset;
             }
-            int[] cursor = cursors.get(i);
             cursor[0] += dx;
             cursor[1] += dy;
             int maxDist = 20;
@@ -116,13 +125,7 @@ public class Archery extends MiniGame {
             if (cursor[1] < -maxDist) {
                 cursor[1] = -maxDist;
             }
-
-        }
-
-        wind.remove(0);
-        arrows = isGameOver();
-    }
-
+	}
     @Override
     public boolean isGameOver() {
         return wind.isEmpty();
