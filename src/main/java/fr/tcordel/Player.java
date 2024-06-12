@@ -68,9 +68,13 @@ public class Player {
 	public int getPoints() {
 		int p = 1;
 		for (int i = 0; i < medals.length; ++i) {
-			p *= (3 * medals[i][0] + medals[i][1]);
+			p *= getPointsForGame(i);
 		}
 		return p;
+	}
+
+	public int getPointsForGame(int gameId) {
+		return (3 * medals[gameId][0] + medals[gameId][1]);
 	}
 
 	public void reset() {
@@ -90,6 +94,9 @@ public class Player {
 		medals[2][0] = Integer.parseInt(scores[7]);
 		medals[2][1] = Integer.parseInt(scores[8]);
 		medals[2][2] = Integer.parseInt(scores[9]);
+		medals[3][0] = Integer.parseInt(scores[10]);
+		medals[3][1] = Integer.parseInt(scores[11]);
+		medals[3][2] = Integer.parseInt(scores[12]);
 	}
 
 	public void setMessage(String message) {
