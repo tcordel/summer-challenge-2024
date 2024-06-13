@@ -34,9 +34,11 @@ public class StrategySupervisor {
 			String gameName = Strategy.getGameName(i);
 			Strategy strat = strats.get(i);
 			boolean bonus = miniGameScores.get(i) == minimumPoints;
+			// boolean last = strat.position() == 2;
+			boolean last = false;
 			List<ActionScore> actionScores = strat.compute();
 			for (ActionScore actionScore : actionScores) {
-				int score = actionScore.score() * (bonus ? 3 : 1);
+				int score = actionScore.score() * (bonus ? 3 : 1) * (last ? 2 : 1);
 				System.err.println("%s - %s scored %d, bonus %b".formatted(gameName, actionScore.action(),
 						score, bonus));
 				cumulatedScore.put(actionScore.action(),

@@ -2,7 +2,10 @@ package fr.tcordel.mini.strats;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
+
 import fr.tcordel.Action;
+import fr.tcordel.Game;
 import fr.tcordel.Player;
 import fr.tcordel.mini.RollerSpeedSkating;
 
@@ -49,6 +52,17 @@ public class RollerSpeedSkatingStrategy implements Strategy {
 					new ActionScore(roller.directions.get(2), 1),
 					new ActionScore(roller.directions.get(3), 3));
 		}
+	}
+
+
+	@Override
+public int position() {
+		int myScore = roller.positions[Player.playerIdx];
+		return (int) IntStream.range(0, Game.PLAYER_COUNT)
+				.filter(i -> i != Player.playerIdx)
+				.map(i -> roller.positions[i])
+				.filter(i -> i > myScore)
+				.count();
 	}
 
 	Frame getFrame(int playerIdx) {

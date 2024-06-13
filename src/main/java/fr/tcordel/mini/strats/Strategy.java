@@ -6,6 +6,8 @@ public interface Strategy {
 
 	List<ActionScore> compute();
 
+	int position();
+
 	public static Strategy builder(int gameId,
 			String gpu,
 			int reg0,

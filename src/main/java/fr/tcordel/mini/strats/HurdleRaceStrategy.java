@@ -1,9 +1,11 @@
 package fr.tcordel.mini.strats;
 
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.List;
 
 import fr.tcordel.Action;
+import fr.tcordel.Game;
 import fr.tcordel.Player;
 import fr.tcordel.mini.HurdleRace;
 
@@ -34,8 +36,8 @@ public class HurdleRaceStrategy implements Strategy {
 		return switch (action) {
 			case LEFT -> 1;
 			case DOWN -> 2;
-			case UP -> 3;
-			case RIGHT -> 4;
+			case UP -> 2;
+			case RIGHT -> 3;
 		};
 	}
 
@@ -64,5 +66,15 @@ public class HurdleRaceStrategy implements Strategy {
 						getScore(action, hurdleRace.map
 								.substring(hurdleRace.positions[Player.playerIdx]))))
 				.toList();
+	}
+
+	@Override
+	public int position() {
+		int myScore = hurdleRace.positions[Player.playerIdx];
+		return (int) IntStream.range(0, Game.PLAYER_COUNT)
+				.filter(i -> i != Player.playerIdx)
+				.map(i -> hurdleRace.positions[i])
+				.filter(i -> i > myScore)
+				.count();
 	}
 }

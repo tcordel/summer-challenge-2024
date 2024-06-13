@@ -1,9 +1,12 @@
 package fr.tcordel.mini.strats;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import fr.tcordel.Action;
+import fr.tcordel.Game;
 import fr.tcordel.Player;
 import fr.tcordel.mini.Diving;
 
@@ -36,10 +39,26 @@ public class DivingStrategy implements Strategy {
 	@Override
 	public List<ActionScore> compute() {
 		Action request = Action.from(diving.goal.get(0));
+		if (getMyScore() > 21 && position() == 0) {
+			return Collections.emptyList();
+		}
 		return Stream.of(Action.values())
 				.map(action -> new ActionScore(action,
-						action.equals(request) ? (diving.combo[Player.playerIdx] > 0 ? 2 : 1) : 0))
+					action.equals(request) ? (diving.combo[Player.playerIdx] > 0 ? 2 : 1) * 2 : 0))
 				.toList();
 	}
 
+	@Override
+	public int position() {
+		int myScore = getMyScore();
+		return (int) IntStream.range(0, Game.PLAYER_COUNT)
+				.filter(i -> i != Player.playerIdx)
+				.map(i -> diving.points[i])
+				.filter(i -> i > myScore)
+				.count();
+	}
+
+	private int getMyScore() {
+		return diving.points[Player.playerIdx];
+	}
 }

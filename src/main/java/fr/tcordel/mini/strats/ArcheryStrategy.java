@@ -1,9 +1,11 @@
 package fr.tcordel.mini.strats;
 
 import java.util.List;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import fr.tcordel.Action;
+import fr.tcordel.Game;
 import fr.tcordel.Player;
 import fr.tcordel.mini.Archery;
 
@@ -56,5 +58,15 @@ public class ArcheryStrategy implements Strategy {
 
 	int distanceToTarget(int[] cursor) {
 		return Math.abs(cursor[0]) + Math.abs(cursor[1]);
+	}
+
+	@Override
+	public int position() {
+		int myScore = distanceToTarget(archery.cursors.get(Player.playerIdx));
+		return (int) IntStream.range(0, Game.PLAYER_COUNT)
+				.filter(i -> i != Player.playerIdx)
+				.map(i -> distanceToTarget(archery.cursors.get(i)))
+				.filter(i -> i < myScore)
+				.count();
 	}
 }
