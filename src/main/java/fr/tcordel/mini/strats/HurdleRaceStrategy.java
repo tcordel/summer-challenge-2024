@@ -2,6 +2,7 @@ package fr.tcordel.mini.strats;
 
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import java.util.Collections;
 import java.util.List;
 
 import fr.tcordel.Action;
@@ -61,11 +62,18 @@ public class HurdleRaceStrategy implements Strategy {
 
 	@Override
 	public List<ActionScore> compute() {
+		if (discard()) {
+			return Collections.emptyList();
+		}
 		return Stream.of(Action.values())
 				.map(action -> new ActionScore(action,
 						getScore(action, hurdleRace.map
 								.substring(hurdleRace.positions[Player.playerIdx]))))
 				.toList();
+	}
+
+	boolean discard() {
+		return hurdleRace.stunTimers[Player.playerIdx] > 0;
 	}
 
 	@Override

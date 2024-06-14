@@ -1,6 +1,7 @@
 package fr.tcordel.mini.strats;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -38,7 +39,9 @@ public class RollerSpeedSkatingStrategy implements Strategy {
 	@Override
 	public List<ActionScore> compute() {
 		Frame frame = getFrame(Player.playerIdx);
-		if (frame.risk() >= 3) {
+		if (frame.risk() < 0) {
+			return Collections.emptyList();
+		} else if (frame.risk() >= 3) {
 			return List.of(
 					new ActionScore(roller.directions.get(0), 3),
 					new ActionScore(roller.directions.get(1), 2),
@@ -54,10 +57,10 @@ public class RollerSpeedSkatingStrategy implements Strategy {
 		}
 	}
 
-
 	@Override
-public int position() {
+	public int position() {
 		int myScore = roller.positions[Player.playerIdx];
+		System.err.println("Roller - risk %d".formatted(roller.risk[Player.playerIdx]));
 		return (int) IntStream.range(0, Game.PLAYER_COUNT)
 				.filter(i -> i != Player.playerIdx)
 				.map(i -> roller.positions[i])
