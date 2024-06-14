@@ -39,13 +39,21 @@ public class DivingStrategy implements Strategy {
 	@Override
 	public List<ActionScore> compute() {
 		Action request = Action.from(diving.goal.get(0));
-		if (getMyScore() > 21 && position() == 0) {
+		if (getMyScore() > 21 && !incomingThreat()) {
 			return Collections.emptyList();
 		}
 		return Stream.of(Action.values())
 				.map(action -> new ActionScore(action,
-					action.equals(request) ? (diving.combo[Player.playerIdx] > 0 ? 2 : 1) * 2 : 0))
+						action.equals(request) ? (diving.combo[Player.playerIdx] > 0 ? 2 : 1) * 2 : 0))
 				.toList();
+	}
+
+	boolean incomingThreat() {
+		int myScore = getMyScore();
+		return (int) IntStream.range(0, Game.PLAYER_COUNT)
+				.filter(i -> i != Player.playerIdx)
+				.filter(i -> (diving.points[i] + diving.combo[i]) >= myScore)
+				.count() > 0;
 	}
 
 	@Override
