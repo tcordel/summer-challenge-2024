@@ -41,20 +41,35 @@ public class RollerSpeedSkatingStrategy implements Strategy {
 		Frame frame = getFrame(Player.playerIdx);
 		if (frame.risk() < 0) {
 			return Collections.emptyList();
-		} else if (frame.risk() >= 3) {
+		}
+
+		if (hasNeighbourgh()) {
+			return List.of(
+					new ActionScore(roller.directions.get(0), Math.max(frame.risk() - 2, 0)),
+					new ActionScore(roller.directions.get(1), frame.risk() < 3 ? 2 : 0),
+					new ActionScore(roller.directions.get(2), frame.risk() < 2 ? 1 : -1),
+					new ActionScore(roller.directions.get(3), frame.risk() < 2 ? 1 : -1));
+		}
+
+		if (frame.risk() >= 3) {
 			return List.of(
 					new ActionScore(roller.directions.get(0), 3),
 					new ActionScore(roller.directions.get(1), 2),
 					new ActionScore(roller.directions.get(2), 0),
 					new ActionScore(roller.directions.get(3), -1));
-		} else {
-
-			return List.of(
-					new ActionScore(roller.directions.get(0), 0),
-					new ActionScore(roller.directions.get(1), 2),
-					new ActionScore(roller.directions.get(2), 1),
-					new ActionScore(roller.directions.get(3), 3));
 		}
+		return List.of(
+				new ActionScore(roller.directions.get(0), 0),
+				new ActionScore(roller.directions.get(1), 2),
+				new ActionScore(roller.directions.get(2), 1),
+				new ActionScore(roller.directions.get(3), 3));
+	}
+
+	boolean hasNeighbourgh() {
+		int me = roller.positions[Player.playerIdx] % 10;
+		int other1 = roller.positions[(Player.playerIdx + 1) % 3] % 10;
+		int other2 = roller.positions[(Player.playerIdx + 2) % 3] % 10;
+		return Math.abs(me - other1) <= 1 || Math.abs(me - other2) <= 1;
 	}
 
 	@Override
