@@ -21,4 +21,14 @@ public class GameOverStrategy implements Strategy {
 		return 0;
 	}
 
+	@Override
+	public int nbOfTurnLeft() {
+		return 0;
+	}
+
+	@Override
+	public double simulate(Action[] actions, int sizeOf) {
+		return 1d;
+	}
+
 }

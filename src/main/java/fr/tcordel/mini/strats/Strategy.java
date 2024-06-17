@@ -2,11 +2,15 @@ package fr.tcordel.mini.strats;
 
 import java.util.List;
 
+import fr.tcordel.Action;
+
 public interface Strategy {
 
 	List<ActionScore> compute();
+	double simulate(Action[] actions, int sizeOf);
 
 	int position();
+	int nbOfTurnLeft();
 
 	public static Strategy builder(int gameId,
 			String gpu,

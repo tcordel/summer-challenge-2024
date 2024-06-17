@@ -69,4 +69,14 @@ public class ArcheryStrategy implements Strategy {
 				.filter(i -> i < myScore)
 				.count();
 	}
+
+	@Override
+	public int nbOfTurnLeft() {
+		return archery.wind.size();
+	}
+
+	@Override
+	public double simulate(Action[] actions, int sizeOf) {
+		return archery.simulate(actions, sizeOf);
+	}
 }

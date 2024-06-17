@@ -14,6 +14,8 @@ public class RollerSpeedSkatingStrategy implements Strategy {
 
 	private final RollerSpeedSkating roller;
 
+	private final int nbOfTurnLeft;
+
 	public RollerSpeedSkatingStrategy(
 			String gpu,
 			int reg0,
@@ -34,6 +36,7 @@ public class RollerSpeedSkatingStrategy implements Strategy {
 		roller.risk[0] = reg3;
 		roller.risk[1] = reg4;
 		roller.risk[2] = reg5;
+		nbOfTurnLeft = reg6;
 	}
 
 	@Override
@@ -88,5 +91,15 @@ public class RollerSpeedSkatingStrategy implements Strategy {
 	}
 
 	record Frame(int position, int risk) {
+	}
+
+	@Override
+	public double simulate(Action[] actions, int sizeOf) {
+		return 1d;
+	}
+
+	@Override
+	public int nbOfTurnLeft() {
+		return nbOfTurnLeft;
 	}
 }

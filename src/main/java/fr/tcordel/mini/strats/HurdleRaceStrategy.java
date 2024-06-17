@@ -85,4 +85,16 @@ public class HurdleRaceStrategy implements Strategy {
 				.filter(i -> i > myScore)
 				.count();
 	}
+
+	@Override
+	public int nbOfTurnLeft() {
+		String remainingGpu = hurdleRace.getGPU().substring(hurdleRace.positions[Player.playerIdx]);
+		int hurdles = remainingGpu.split("#").length - 1;
+		return 2 * hurdles + Math.round((remainingGpu.length() - 2 * hurdles) / 3);
+	}
+
+	@Override
+	public double simulate(Action[] actions, int sizeOf) {
+		return hurdleRace.simulate(actions, sizeOf);
+	}
 }

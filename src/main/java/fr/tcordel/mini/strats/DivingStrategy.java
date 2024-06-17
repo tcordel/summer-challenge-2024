@@ -69,4 +69,14 @@ public class DivingStrategy implements Strategy {
 	private int getMyScore() {
 		return diving.points[Player.playerIdx];
 	}
+
+	@Override
+	public int nbOfTurnLeft() {
+		return diving.goal.size();
+	}
+
+	@Override
+	public double simulate(Action[] actions, int sizeOf) {
+		return diving.simulate(actions, sizeOf);
+	}
 }

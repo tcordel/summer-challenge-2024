@@ -9,6 +9,8 @@ import fr.tcordel.mini.strats.Strategy;
 public class Player {
 
 	public static int playerIdx = 0;
+	private static long turnStartedAt = 0L;
+	public static int turn = 0;
 	public static List<Player> players = new ArrayList<>();
 
 	public static void main(String args[]) {
@@ -27,6 +29,7 @@ public class Player {
 
 		// game loop
 		while (true) {
+			turn++;
 			for (int i = 0; i < 3; i++) {
 				players.get(i).refresh(in.nextLine());
 			}
@@ -43,6 +46,7 @@ public class Player {
 				strategies.add(Strategy.builder(i, gpu, reg0, reg1, reg2, reg3, reg4, reg5, reg6));
 			}
 			in.nextLine();
+			turnStartedAt = System.currentTimeMillis();
 
 			StrategySupervisor supervisor = new StrategySupervisor(strategies);
 			Action selectedAction = supervisor.process();
@@ -51,6 +55,10 @@ public class Player {
 
 			System.out.println(selectedAction);
 		}
+	}
+
+	public static boolean hasTime(int offset) {
+		return (System.currentTimeMillis() - turnStartedAt) < (40 - offset);
 	}
 
 	String message;
