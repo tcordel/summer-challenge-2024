@@ -1,15 +1,11 @@
 package fr.tcordel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,8 +18,9 @@ public class StrategySupervisor {
 
 	private static final Random RANDOM = new Random();
 	private static final List<Action[]> GENOMES = new ArrayList<Action[]>();
-	private static final int GENOMES_SIZE = 200;
-	private static final SortedMap<Double, Action[]> population = new TreeMap<>(Collections.reverseOrder());
+	private static final int GENOMES_SIZE = 100;
+	private static final List<Element> population = new ArrayList<>();
+	Action[] fittest = null;
 	private final List<Strategy> strats;
 
 	public StrategySupervisor(List<Strategy> strats) {
@@ -39,64 +36,79 @@ public class StrategySupervisor {
 				.mapToInt(Strategy::nbOfTurnLeft)
 				.min()
 				.orElse(0);
-		if (turn > 3) {
+		// if (turn > 1) {
 			return getBestPredictiveAction(predictableStrats, turn);
-		} else {
-			return getBestLocalAction();
-		}
+		// } else {
+		// 	return getBestLocalAction();
+		// }
 	}
 
 	private Action getBestPredictiveAction(List<Strategy> predictableStrats, int turn) {
 		GENOMES.clear();
 		population.clear();
-		generateRandomGenomes(GENOMES_SIZE, turn);
-		Action[] fittest = null;
+		if (fittest == null || fittest.length <= turn) {
+			fittest = null;
+			generateRandomGenomes(GENOMES_SIZE, turn);
+		} else {
+			Action[] fittestShifted = new Action[turn];
+			System.arraycopy(fittest, 1, fittestShifted, 0, turn);
+			GENOMES.add(fittestShifted);
+			fittest = fittestShifted;
+			generateRandomGenomes(GENOMES_SIZE - 1, turn);
+		}
 		int generation = 0;
-		while (Player.hasTime(0) && generation < 50) {
-			generation ++;
+		Element selected = null;
+		while (Player.hasTime(0)) {
+			generation++;
 			simulate(predictableStrats, turn);
-			Entry<Double, Action[]> selected = population.entrySet().iterator().next();
+			population.sort(Comparator.comparingDouble(Element::score).reversed());
+			selected = population.get(0);
 			// System.err.println("Fittest %s, with score %f".formatted(
-			// 		Stream.of(selected.getValue()).map(a -> a.name().charAt(0) + "").collect(Collectors.joining()),
-			// 		selected.getKey()));
-			fittest = selected.getValue();
+			// Stream.of(selected.getValue()).map(a -> a.name().charAt(0) +
+			// "").collect(Collectors.joining()),
+			// selected.getKey()));
+			fittest = selected.genome();
 			if (!Player.hasTime(0)) {
 				break;
 			}
 			processNaturalSelection(turn);
 			population.clear();
 		}
+		System.err.println("Fittest %s with score %f at generation %d".formatted(
+				Stream.of(fittest).map(a -> a.name().charAt(0) + "").collect(Collectors.joining()),
+				selected.score(),
+				generation));
 		return fittest[0];
 	}
 
 	private void processNaturalSelection(int turn) {
 		GENOMES.clear();
-		Action[][] sorted = population.values().toArray(new Action[0][]);
-		for (int i = 0; i < Math.min(5, sorted.length); i++) {
-			GENOMES.add(sorted[i]);
+		for (int i = 0; i < 10; i++) {
+			GENOMES.add(population.get(i).genome());
 		}
 
-		if (sorted.length >= 10) {
-			for (int i = 0; i < 5; i++) {
-				GENOMES.add(sorted[RANDOM.nextInt(sorted.length - 5) + 5]);
-			}
+		for (int i = 0; i < 5; i++) {
+			GENOMES.add(population.get(RANDOM.nextInt(70) + 10).genome());
 		}
 
 		generateRandomGenomes(5, turn);
 
-		for (int i = 0; i < 35; i++) {
-			GENOMES.add(crossover(sorted, turn));
+		while (GENOMES.size() < GENOMES_SIZE) {
+			GENOMES.add(crossover(turn));
 		}
 	}
 
-	private Action[] crossover(Action[][] sorted, int turn) {
-		int max = Math.min(35, sorted.length);
-		Action[] father = sorted[RANDOM.nextInt(max)];
-		Action[] mother = sorted[RANDOM.nextInt(max)];
+	private Action[] crossover(int turn) {
+		int max = 50;
+		Action[] father = population.get(RANDOM.nextInt(max)).genome();
+		Action[] mother = population.get(RANDOM.nextInt(max)).genome();
 		Action[] crossed = new Action[turn];
 		int crossedIndex = RANDOM.nextInt(turn);
 		System.arraycopy(father, 0, crossed, 0, crossedIndex);
 		System.arraycopy(mother, crossedIndex, crossed, crossedIndex, turn - crossedIndex);
+		if (RANDOM.nextInt(100) <= 5) {
+			crossed[RANDOM.nextInt(turn)] = generateRandomAction();
+		}
 		return crossed;
 	}
 
@@ -106,7 +118,7 @@ public class StrategySupervisor {
 			for (Strategy strat : predictableStrats) {
 				score *= strat.simulate(GENOMES.get(i), turn);
 			}
-			population.put(score, GENOMES.get(i));
+			population.add(new Element(score, GENOMES.get(i)));
 			if (!Player.hasTime(0)) {
 				break;
 			}
@@ -117,18 +129,24 @@ public class StrategySupervisor {
 		for (int i = 0; i < number; i++) {
 			Action[] action = new Action[turn];
 			for (int j = 0; j < turn; j++) {
-				action[j] = switch (RANDOM.nextInt(4)) {
-					case 0 -> Action.UP;
-					case 1 -> Action.DOWN;
-					case 2 -> Action.LEFT;
-					default -> Action.RIGHT;
-				};
+				action[j] = generateRandomAction();
 			}
 			GENOMES.add(action);
 		}
 	}
 
+	private Action generateRandomAction() {
+		return switch (RANDOM.nextInt(4)) {
+			case 0 -> Action.UP;
+			case 1 -> Action.DOWN;
+			case 2 -> Action.LEFT;
+			default -> Action.RIGHT;
+		};
+
+	}
+
 	private Action getBestLocalAction() {
+		fittest = null;
 		Map<Action, Integer> cumulatedScore = new HashMap<>();
 		List<Integer> miniGameScores = new ArrayList<>();
 		int minimumPoints = Integer.MAX_VALUE;
@@ -162,5 +180,8 @@ public class StrategySupervisor {
 				.max(Comparator.comparingInt(Entry::getValue))
 				.map(Entry::getKey)
 				.orElse(Action.RIGHT);
+	}
+
+	record Element(double score, Action[] genome) {
 	}
 }

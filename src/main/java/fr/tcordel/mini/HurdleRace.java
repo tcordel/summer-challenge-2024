@@ -178,6 +178,7 @@ public class HurdleRace extends MiniGame {
 		int position = positions[Player.playerIdx];
 		int startingPosition = position;
 		int finishedAt = -1;
+		int stunCounter = 0;
 		for (int i = 0; i < sizeOf; i++) {
 			if (stun > 0) {
 				stun -= 1;
@@ -205,6 +206,7 @@ public class HurdleRace extends MiniGame {
 				position = Math.min(maxX, position + 1);
 				if (map.charAt(position) == '#' && !jump) {
 					stun = STUN_DURATION;
+					stunCounter ++;
 					break;
 				}
 				if (position == maxX) {
@@ -215,7 +217,7 @@ public class HurdleRace extends MiniGame {
 			}
 		}
 		if (finishedAt > 0) {
-			return 100 - finishedAt;
+			return 100 - finishedAt - Math.max(stunCounter, 5) * 10;
 		}
 		return 1 + position - startingPosition;
 	}

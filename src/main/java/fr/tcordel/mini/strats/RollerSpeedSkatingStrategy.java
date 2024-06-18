@@ -95,11 +95,15 @@ public class RollerSpeedSkatingStrategy implements Strategy {
 
 	@Override
 	public double simulate(Action[] actions, int sizeOf) {
+		Action first = actions[0];
+		if (roller.getGPU().indexOf(first.name().charAt(0)) >= 2) {
+			return 1.1d;
+		}
 		return 1d;
 	}
 
 	@Override
 	public int nbOfTurnLeft() {
-		return nbOfTurnLeft;
+		return Integer.MAX_VALUE;
 	}
 }

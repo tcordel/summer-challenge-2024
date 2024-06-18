@@ -109,7 +109,7 @@ public class Diving extends MiniGame {
 				c = 0;
 			}
 		}
-		return 1 + Math.min(26,score - scoreIn);
+		return 1 + Math.min(26,score);
 	}
 
 }
