@@ -1,5 +1,6 @@
 package fr.tcordel.mini;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -206,7 +207,7 @@ public class HurdleRace extends MiniGame {
 				position = Math.min(maxX, position + 1);
 				if (map.charAt(position) == '#' && !jump) {
 					stun = STUN_DURATION;
-					stunCounter ++;
+					stunCounter++;
 					break;
 				}
 				if (position == maxX) {
@@ -217,9 +218,32 @@ public class HurdleRace extends MiniGame {
 			}
 		}
 		if (finishedAt > 0) {
-			return 100 - finishedAt - Math.max(stunCounter, 5) * 10;
+			return (100 - finishedAt * 10) / (stunCounter < 1 ? 1 : Math.max(stunCounter, 5));
 		}
-		return 1 + position - startingPosition;
+		return (1 + position - startingPosition) / (stunCounter < 1 ? 1 : Math.max(stunCounter, 5));
 	}
 
+	public List<Action> getBestMove() {
+		List<Action> actions = new ArrayList<>();
+		int position = positions[Player.playerIdx];
+		while (position < map.length()) {
+			String subMap = map.substring(position);
+			int indexOf = subMap.indexOf("#", 1);
+
+			Action a = switch (indexOf) {
+				case 1, 3 -> Action.UP;
+				case 2 -> Action.LEFT;
+				default -> Action.RIGHT;
+			};
+
+			int move = switch (a) {
+				case UP, DOWN -> 2;
+				case LEFT -> 1;
+				case RIGHT -> 3;
+			};
+			position += move;
+			actions.add(a);
+		}
+		return actions;
+	}
 }

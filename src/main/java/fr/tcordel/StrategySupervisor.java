@@ -12,13 +12,14 @@ import java.util.stream.Stream;
 
 import fr.tcordel.mini.strats.ActionScore;
 import fr.tcordel.mini.strats.GameOverStrategy;
+import fr.tcordel.mini.strats.HurdleRaceStrategy;
 import fr.tcordel.mini.strats.Strategy;
 
 public class StrategySupervisor {
 
 	private static final Random RANDOM = new Random();
 	private static final List<Action[]> GENOMES = new ArrayList<Action[]>();
-	private static final int GENOMES_SIZE = 100;
+	private static final int GENOMES_SIZE = 200;
 	private static final List<Element> population = new ArrayList<>();
 	Action[] fittest = null;
 	private final List<Strategy> strats;
@@ -36,11 +37,11 @@ public class StrategySupervisor {
 				.mapToInt(Strategy::nbOfTurnLeft)
 				.min()
 				.orElse(0);
-		// if (turn > 1) {
+		if (turn > 0) {
 			return getBestPredictiveAction(predictableStrats, turn);
-		// } else {
-		// 	return getBestLocalAction();
-		// }
+		} else {
+			return getBestLocalAction();
+		}
 	}
 
 	private Action getBestPredictiveAction(List<Strategy> predictableStrats, int turn) {
@@ -48,14 +49,15 @@ public class StrategySupervisor {
 		population.clear();
 		if (fittest == null || fittest.length <= turn) {
 			fittest = null;
-			generateRandomGenomes(GENOMES_SIZE, turn);
+			generateRandomGenomes(GENOMES_SIZE - 1, turn);
 		} else {
 			Action[] fittestShifted = new Action[turn];
 			System.arraycopy(fittest, 1, fittestShifted, 0, turn);
 			GENOMES.add(fittestShifted);
 			fittest = fittestShifted;
-			generateRandomGenomes(GENOMES_SIZE - 1, turn);
+			generateRandomGenomes(GENOMES_SIZE - 2, turn);
 		}
+		generateBestGenomeForHurdle(turn);
 		int generation = 0;
 		Element selected = null;
 		while (Player.hasTime(0)) {
@@ -79,6 +81,25 @@ public class StrategySupervisor {
 				selected.score(),
 				generation));
 		return fittest[0];
+	}
+
+	private void generateBestGenomeForHurdle(int turn) {
+		Strategy strategy = strats.get(0);
+		if (!(strategy instanceof HurdleRaceStrategy)) {
+			return;
+		}
+		List<Action> actions = ((HurdleRaceStrategy) strategy).hurdleRace.getBestMove();
+		Action[] action = new Action[turn];
+		for (int i = 0; i < turn; i++) {
+			Action a;
+			if (actions.size() > turn) {
+				a = actions.get(i);
+			} else {
+				a = generateRandomAction();
+			}
+			action[i] = a;
+		}
+		GENOMES.add(action);
 	}
 
 	private void processNaturalSelection(int turn) {

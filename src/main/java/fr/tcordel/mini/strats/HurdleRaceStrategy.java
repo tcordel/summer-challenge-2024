@@ -12,7 +12,7 @@ import fr.tcordel.mini.HurdleRace;
 
 public class HurdleRaceStrategy implements Strategy {
 
-	private final HurdleRace hurdleRace;
+	public final HurdleRace hurdleRace;
 
 	public HurdleRaceStrategy(
 			String gpu,
