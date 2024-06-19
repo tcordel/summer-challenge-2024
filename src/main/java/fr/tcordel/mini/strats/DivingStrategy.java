@@ -44,7 +44,7 @@ public class DivingStrategy implements Strategy {
 		}
 		return Stream.of(Action.values())
 				.map(action -> new ActionScore(action,
-						action.equals(request) ? (diving.combo[Player.playerIdx] > 0 ? 2 : 1) * 2 : 0))
+						action.equals(request) ? (diving.combo[Player.playerIdx] > 0 ? 2 : 1) * 1  : 0))
 				.toList();
 	}
 
@@ -52,7 +52,7 @@ public class DivingStrategy implements Strategy {
 		int myScore = getMyScore();
 		return (int) IntStream.range(0, Game.PLAYER_COUNT)
 				.filter(i -> i != Player.playerIdx)
-				.filter(i -> (diving.points[i] + diving.combo[i]) >= myScore)
+				.filter(i -> (diving.points[i] + diving.combo[i]) >= myScore - 7)
 				.count() > 0;
 	}
 

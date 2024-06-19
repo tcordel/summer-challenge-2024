@@ -2,7 +2,6 @@ package fr.tcordel.mini.strats;
 
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import java.time.chrono.HijrahDate;
 import java.util.Collections;
 import java.util.List;
 

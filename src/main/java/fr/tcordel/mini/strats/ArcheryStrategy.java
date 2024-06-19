@@ -38,6 +38,7 @@ public class ArcheryStrategy implements Strategy {
 
 	@Override
 	public List<ActionScore> compute() {
+		// TODO use genetic here
 		return Stream.of(Action.values())
 				.map(action -> new ActionScore(action,
 						getScore(action, archery.cursors.get(Player.playerIdx),

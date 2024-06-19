@@ -23,6 +23,7 @@ public class LocalMaximum implements Algorythm {
 	@Override
 	public Action findBestAction() {
 		Map<Action, Integer> cumulatedScore = new HashMap<>();
+		List<String> lowest = new ArrayList<>();
 		List<Integer> miniGameScores = new ArrayList<>();
 		int minimumPoints = Integer.MAX_VALUE;
 		for (int i = 0; i < strats.size(); i++) {
@@ -32,17 +33,20 @@ public class LocalMaximum implements Algorythm {
 					gamePoints));
 			if (gamePoints < minimumPoints) {
 				minimumPoints = gamePoints;
+				lowest.add(Strategy.getGameName(i));
+			} else if (gamePoints == minimumPoints) {
+				lowest.add(Strategy.getGameName(i));
 			}
 		}
 		for (int i = 0; i < strats.size(); i++) {
 			String gameName = Strategy.getGameName(i);
 			Strategy strat = strats.get(i);
-			boolean bonus = miniGameScores.get(i) == minimumPoints;
+			boolean bonus = lowest.contains(gameName) && (lowest.size() == 1 || !gameName.equals("Roller"));
 			// boolean last = strat.position() == 2;
 			boolean last = false;
 			List<ActionScore> actionScores = strat.compute();
 			for (ActionScore actionScore : actionScores) {
-				int score = actionScore.score() * (bonus ? 3 : 1) * (last ? 2 : 1);
+				int score = actionScore.score() * (bonus ? 5 : 1) * (last ? 2 : 1);
 				System.err.println("%s - %s scored %d, bonus %b".formatted(gameName,
 						actionScore.action(),
 						score, bonus));
