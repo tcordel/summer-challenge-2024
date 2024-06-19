@@ -2,6 +2,7 @@ package fr.tcordel.mini.strats;
 
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import java.time.chrono.HijrahDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -65,10 +66,48 @@ public class HurdleRaceStrategy implements Strategy {
 		if (discard()) {
 			return Collections.emptyList();
 		}
+		String remainingMap = hurdleRace.map
+				.substring(hurdleRace.positions[Player.playerIdx]);
+		int hurdlePosition = remainingMap.indexOf("#", 1);
+		if (hurdlePosition == 1) {
+			return List.of(
+					new ActionScore(Action.UP, 3),
+					new ActionScore(Action.DOWN, -1),
+					new ActionScore(Action.LEFT, -1),
+					new ActionScore(Action.RIGHT, -1));
+		}
+		boolean winning = false;
+		if (hurdlePosition == -1) {
+			hurdlePosition = remainingMap.length();
+		}
+		int move = hurdlePosition - 1;
+		System.err.println("Hurdle - computing %s, %d %d".formatted(remainingMap, hurdlePosition, move));
+		if (move == 1) {
+			return List.of(
+					new ActionScore(Action.UP, winning ? 3 : -1),
+					new ActionScore(Action.DOWN, winning ? 3 :  -1),
+					new ActionScore(Action.LEFT, 3),
+					new ActionScore(Action.RIGHT, winning ? 3 :  -1));
+		} else if (move == 2) {
+			return List.of(
+					new ActionScore(Action.UP, 3),
+					new ActionScore(Action.DOWN, 3),
+					new ActionScore(Action.LEFT, winning ? 3 :  1),
+					new ActionScore(Action.RIGHT, winning ? 3 :  -1));
+		} else if (move >= 3) {
+			return List.of(
+					new ActionScore(Action.UP, move % 3 == 2 ? 3 : 1),
+					new ActionScore(Action.DOWN, move % 3 == 2 ? 3 : 1),
+					new ActionScore(Action.LEFT, move % 3 == 1 ? 3 : 1),
+					new ActionScore(Action.RIGHT, 3));
+		} else {
+
+		}
 		return Stream.of(Action.values())
-				.map(action -> new ActionScore(action,
-						getScore(action, hurdleRace.map
-								.substring(hurdleRace.positions[Player.playerIdx]))))
+				.map(action -> {
+					return new ActionScore(action,
+							getScore(action, remainingMap));
+				})
 				.toList();
 	}
 
