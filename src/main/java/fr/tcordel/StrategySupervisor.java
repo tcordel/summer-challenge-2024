@@ -23,7 +23,7 @@ public class StrategySupervisor {
 				.mapToInt(Strategy::nbOfTurnLeft)
 				.min()
 				.orElse(0);
-		if (turn > 0) {
+		if (turn > 3) {
 			return new Genetic(predictableStrats, turn).findBestAction();
 		} else {
 			return new LocalMaximum(strats).findBestAction();
