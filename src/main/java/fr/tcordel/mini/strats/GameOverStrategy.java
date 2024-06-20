@@ -31,4 +31,8 @@ public class GameOverStrategy implements Strategy {
 		return 1d;
 	}
 
+	@Override
+	public String getGameName() {
+		return "Game over";
+	}
 }

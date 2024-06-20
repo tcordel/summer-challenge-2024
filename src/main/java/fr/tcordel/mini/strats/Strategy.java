@@ -32,6 +32,7 @@ public interface Strategy {
 			default -> new GameOverStrategy();
 		};
 	}
+	String getGameName();
 
 	public static String getGameName(int gameId) {
 		return switch (gameId) {

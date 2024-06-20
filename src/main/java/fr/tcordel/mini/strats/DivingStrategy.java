@@ -88,4 +88,8 @@ public class DivingStrategy implements Strategy {
 	public double simulate(Action[] actions, int sizeOf) {
 		return diving.simulate(actions, sizeOf);
 	}
+	@Override
+	public String getGameName() {
+		return diving.getName();
+	}
 }

@@ -136,4 +136,8 @@ public class HurdleRaceStrategy implements Strategy {
 	public double simulate(Action[] actions, int sizeOf) {
 		return hurdleRace.simulate(actions, sizeOf);
 	}
+	@Override
+	public String getGameName() {
+		return hurdleRace.getName();
+	}
 }

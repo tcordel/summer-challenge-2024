@@ -46,7 +46,9 @@ public class RollerSpeedSkatingStrategy implements Strategy {
 			return Collections.emptyList();
 		}
 
-		if (hasNeighbourgh()) {
+		boolean hasNeighbourgh = hasNeighbourgh();
+		System.err.println("Roller - %d %d %b".formatted(frame.position(), frame.risk(), hasNeighbourgh));
+		if (hasNeighbourgh) {
 			return List.of(
 					new ActionScore(roller.directions.get(0), Math.max(frame.risk() - 2, 0)),
 					new ActionScore(roller.directions.get(1), frame.risk() < 3 ? 2 : 0),
@@ -105,5 +107,9 @@ public class RollerSpeedSkatingStrategy implements Strategy {
 	@Override
 	public int nbOfTurnLeft() {
 		return Integer.MAX_VALUE;
+	}
+	@Override
+	public String getGameName() {
+		return roller.getName();
 	}
 }

@@ -91,4 +91,9 @@ public class ArcheryStrategy implements Strategy {
 	public double simulate(Action[] actions, int sizeOf) {
 		return archery.simulate(actions, sizeOf);
 	}
+
+	@Override
+	public String getGameName() {
+		return archery.getName();
+	}
 }
