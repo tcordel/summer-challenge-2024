@@ -46,13 +46,13 @@ public class RollerSpeedSkatingStrategy implements Strategy {
 			return Collections.emptyList();
 		}
 
-		// if (hasNeighbourgh()) {
-		// 	return List.of(
-		// 			new ActionScore(roller.directions.get(0), Math.max(frame.risk() - 2, 0)),
-		// 			new ActionScore(roller.directions.get(1), frame.risk() < 3 ? 2 : 0),
-		// 			new ActionScore(roller.directions.get(2), frame.risk() < 2 ? 1 : -1),
-		// 			new ActionScore(roller.directions.get(3), frame.risk() < 2 ? 1 : -1));
-		// }
+		if (hasNeighbourgh()) {
+			return List.of(
+					new ActionScore(roller.directions.get(0), Math.max(frame.risk() - 2, 0)),
+					new ActionScore(roller.directions.get(1), frame.risk() < 3 ? 2 : 0),
+					new ActionScore(roller.directions.get(2), frame.risk() < 2 ? 1 : 1),
+					new ActionScore(roller.directions.get(3), frame.risk() < 2 ? 1 : 2));
+		}
 
 		if (frame.risk() >= 3) {
 			return List.of(
@@ -72,7 +72,7 @@ public class RollerSpeedSkatingStrategy implements Strategy {
 		int me = roller.positions[Player.playerIdx] % 10;
 		int other1 = roller.positions[(Player.playerIdx + 1) % 3] % 10;
 		int other2 = roller.positions[(Player.playerIdx + 2) % 3] % 10;
-		return Math.abs(me - other1) <= 1 || Math.abs(me - other2) <= 1;
+		return Math.abs(me - other1) == 0 || Math.abs(me - other2) <= 0;
 	}
 
 	@Override

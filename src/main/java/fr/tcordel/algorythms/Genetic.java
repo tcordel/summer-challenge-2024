@@ -17,7 +17,7 @@ public class Genetic implements Algorythm {
 
 	private static final Random RANDOM = new Random();
 	private static final List<Action[]> GENOMES = new ArrayList<Action[]>();
-	private static final int GENOMES_SIZE = 200;
+	private static final int GENOMES_SIZE = 100;
 	private static final List<Element> population = new ArrayList<>();
 
 	private final List<Strategy> predictableStrats;
@@ -25,12 +25,17 @@ public class Genetic implements Algorythm {
 
 	Action[] fittest = null;
 
-	record Element(double score, Action[] genome) {
+	public static record Element(double score, Action[] genome) {
 	}
 
 	public Genetic(List<Strategy> predictableStrats, int turn) {
 		this.predictableStrats = predictableStrats;
 		this.turn = turn;
+	}
+
+	public Genetic(List<Strategy> predictableStrats, int turn, Action[] fittest) {
+		this(predictableStrats, turn);
+		this.fittest = fittest;
 	}
 
 	@Override
@@ -55,10 +60,6 @@ public class Genetic implements Algorythm {
 			simulate(predictableStrats, turn);
 			population.sort(Comparator.comparingDouble(Element::score).reversed());
 			selected = population.get(0);
-			// System.err.println("Fittest %s, with score %f".formatted(
-			// Stream.of(selected.getValue()).map(a -> a.name().charAt(0) +
-			// "").collect(Collectors.joining()),
-			// selected.getKey()));
 			fittest = selected.genome();
 			if (!Player.hasTime(0)) {
 				break;

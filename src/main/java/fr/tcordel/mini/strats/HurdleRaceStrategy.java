@@ -77,6 +77,7 @@ public class HurdleRaceStrategy implements Strategy {
 		}
 		boolean winning = false;
 		if (hurdlePosition == -1) {
+			winning = true;
 			hurdlePosition = remainingMap.length();
 		}
 		int move = hurdlePosition - 1;

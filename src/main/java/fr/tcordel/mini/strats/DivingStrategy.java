@@ -40,20 +40,29 @@ public class DivingStrategy implements Strategy {
 	public List<ActionScore> compute() {
 		Action request = Action.from(diving.goal.get(0));
 		if (getMyScore() > 21 && !incomingThreat()) {
+			System.err.println("Diving - I'm winning !");
 			return Collections.emptyList();
 		}
 		return Stream.of(Action.values())
 				.map(action -> new ActionScore(action,
-						action.equals(request) ? (diving.combo[Player.playerIdx] > 0 ? 2 : 1) * 1  : 0))
+						action.equals(request) ? (diving.combo[Player.playerIdx] > 0 ? 2 : 1) * 1 : 0))
 				.toList();
 	}
 
 	boolean incomingThreat() {
 		int myScore = getMyScore();
-		return (int) IntStream.range(0, Game.PLAYER_COUNT)
+		return IntStream.range(0, Game.PLAYER_COUNT)
 				.filter(i -> i != Player.playerIdx)
-				.filter(i -> (diving.points[i] + diving.combo[i]) >= myScore - 7)
-				.count() > 0;
+				.anyMatch(i -> getMaxScore(diving.points[i], diving.combo[i]) > myScore);
+	}
+
+	int getMaxScore(int points, int combo) {
+		int score = points;
+		for (int i = 0; i < diving.goal.size(); i++) {
+			combo++;
+			score += combo;
+		}
+		return score;
 	}
 
 	@Override

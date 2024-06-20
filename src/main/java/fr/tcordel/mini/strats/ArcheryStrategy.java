@@ -7,11 +7,13 @@ import java.util.stream.Stream;
 import fr.tcordel.Action;
 import fr.tcordel.Game;
 import fr.tcordel.Player;
+import fr.tcordel.algorythms.Genetic;
 import fr.tcordel.mini.Archery;
 
 public class ArcheryStrategy implements Strategy {
 
 	private final Archery archery;
+	private boolean useGenetic = true;
 
 	public ArcheryStrategy(
 			String gpu,
@@ -39,11 +41,20 @@ public class ArcheryStrategy implements Strategy {
 	@Override
 	public List<ActionScore> compute() {
 		// TODO use genetic here
+		if (useGenetic) {
+			return computeWithGenetic();
+		}
 		return Stream.of(Action.values())
 				.map(action -> new ActionScore(action,
 						getScore(action, archery.cursors.get(Player.playerIdx),
 								archery.wind.get(0))))
 				.toList();
+	}
+
+	private List<ActionScore> computeWithGenetic() {
+		Genetic genetic = new Genetic(List.of(this), archery.wind.size());
+		Action bestAction = genetic.findBestAction();
+		return List.of(new ActionScore(bestAction, 1));
 	}
 
 	private int getScore(Action action, int[] cursor, Integer offset) {
