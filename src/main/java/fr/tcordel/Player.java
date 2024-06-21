@@ -43,7 +43,6 @@ public class Player {
 				int reg4 = in.nextInt();
 				int reg5 = in.nextInt();
 				int reg6 = in.nextInt();
-				Systee
 				strategies.add(Strategy.builder(i, gpu, reg0, reg1, reg2, reg3, reg4, reg5, reg6));
 			}
 			in.nextLine();

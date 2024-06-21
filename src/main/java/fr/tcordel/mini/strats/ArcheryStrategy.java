@@ -17,7 +17,7 @@ public class ArcheryStrategy implements Strategy {
 	private final Archery archery;
 	private boolean useGenetic = true;
 
-	private Element myBest;
+	private List<Element> myBest;
 	private final List<Element> oppBest = new ArrayList<>();
 
 	public ArcheryStrategy(
@@ -47,21 +47,23 @@ public class ArcheryStrategy implements Strategy {
 	@Override
 	public void init() {
 		for (int i = 0; i < Game.PLAYER_COUNT; i++) {
+			if (i == Player.playerIdx) {
+				continue;
+			}
 			genetic.resetFittest();
 			Element best = genetic.findBest(i);
-
-			if (i == Player.playerIdx) {
-				myBest = best;
-			} else {
-				oppBest.add(best);
-			}
+			oppBest.add(best);
 		}
+
+		genetic.resetFittest();
+		genetic.findBest(Player.playerIdx);
+		myBest = genetic.getPopulation();
 	}
 
 	@Override
 	public List<ActionScore> compute() {
 		// TODO use genetic here
-		if (useGenetic) {
+		if (useGenetic && !myBest.isEmpty()) {
 			return computeWithGenetic();
 		}
 		return Stream.of(Action.values())
@@ -72,7 +74,30 @@ public class ArcheryStrategy implements Strategy {
 	}
 
 	private List<ActionScore> computeWithGenetic() {
-		return List.of(new ActionScore(myBest.genome()[0], 1));
+		double bestScore = 0;
+		int scoreLeft = 0;
+		int scoreUp = 0;
+		int scoreRight = 0;
+		int scoreDown = 0;
+		for (int i = 0; i < myBest.size(); i++) {
+			Element element = myBest.get(i);
+			if (i == 0) {
+				bestScore = element.score();
+			}
+			if (bestScore <= element.score()) {
+				switch (element.genome()[0]) {
+					case UP -> scoreUp = 2;
+					case DOWN -> scoreDown = 2;
+					case RIGHT -> scoreRight = 2;
+					case LEFT -> scoreLeft = 2;
+				}
+			}
+		}
+		return List.of(
+				new ActionScore(Action.RIGHT, scoreRight),
+				new ActionScore(Action.UP, scoreUp),
+				new ActionScore(Action.DOWN, scoreDown),
+				new ActionScore(Action.LEFT, scoreLeft));
 	}
 
 	private int getScore(Action action, int[] cursor, Integer offset) {
@@ -92,7 +117,10 @@ public class ArcheryStrategy implements Strategy {
 
 	@Override
 	public int position() {
-		double myScore = myBest.score();
+		if (myBest.isEmpty()) {
+			return 0;
+		}
+		double myScore = myBest.get(0).score();
 		System.err.print("Archer - my %d o1 %d o2 %d".formatted(
 				myScore,
 				oppBest.get(0).score(),

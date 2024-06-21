@@ -70,6 +70,7 @@ public class Genetic implements Algorythm {
 		int generation = 0;
 		while (hasTime(startedAt) && (!limitSimulation || generation < populationSize)) {
 			generation++;
+			population.clear();
 			simulate(predictableStrats, turn, startedAt, playerIdx);
 			population.sort(Comparator.comparingDouble(Element::score).reversed());
 			fittest = population.get(0);
@@ -77,7 +78,6 @@ public class Genetic implements Algorythm {
 				break;
 			}
 			processNaturalSelection(turn);
-			population.clear();
 		}
 		if (fittest == null) {
 			fittest = new Element(-2, genomes.get(0));
@@ -178,6 +178,10 @@ public class Genetic implements Algorythm {
 			default -> Action.RIGHT;
 		};
 
+	}
+
+	public List<Element> getPopulation() {
+		return population;
 	}
 
 }
