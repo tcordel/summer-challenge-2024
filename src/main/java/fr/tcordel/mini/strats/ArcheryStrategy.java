@@ -79,17 +79,28 @@ public class ArcheryStrategy implements Strategy {
 		int scoreUp = 0;
 		int scoreRight = 0;
 		int scoreDown = 0;
+		boolean compareWithOther = oppBest.stream()
+				.noneMatch(i -> i.score() < 0);
+
+		int oppBestScore = (int) oppBest.stream()
+				.mapToDouble(Element::score)
+				.max()
+				.orElse(-1d);
 		for (int i = 0; i < myBest.size(); i++) {
 			Element element = myBest.get(i);
+			double score = element.score();
 			if (i == 0) {
-				bestScore = element.score();
+				bestScore = score;
 			}
-			if (bestScore <= element.score()) {
+			boolean isBestScore = score == bestScore;
+
+			if (bestScore <= score ||
+					(compareWithOther && score >= oppBestScore)) {
 				switch (element.genome()[0]) {
-					case UP -> scoreUp = 2;
-					case DOWN -> scoreDown = 2;
-					case RIGHT -> scoreRight = 2;
-					case LEFT -> scoreLeft = 2;
+					case UP -> scoreUp = Math.max(scoreUp, isBestScore ? 3 : 2);
+					case DOWN -> scoreDown = Math.max(scoreDown, isBestScore ? 3 : 2);
+					case RIGHT -> scoreRight = Math.max(scoreRight, isBestScore ? 3 : 2);
+					case LEFT -> scoreLeft = Math.max(scoreLeft, isBestScore ? 3 : 2);
 				}
 			}
 		}
