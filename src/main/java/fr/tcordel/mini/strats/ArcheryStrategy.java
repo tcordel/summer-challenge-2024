@@ -12,6 +12,7 @@ import fr.tcordel.mini.Archery;
 
 public class ArcheryStrategy implements Strategy {
 
+	private static final Genetic genetic = new Genetic(100, 10);
 	private final Archery archery;
 	private boolean useGenetic = true;
 
@@ -52,7 +53,7 @@ public class ArcheryStrategy implements Strategy {
 	}
 
 	private List<ActionScore> computeWithGenetic() {
-		Genetic genetic = new Genetic(List.of(this), archery.wind.size());
+		genetic.refresh(List.of(this), archery.wind.size());
 		Action bestAction = genetic.findBestAction();
 		return List.of(new ActionScore(bestAction, 1));
 	}

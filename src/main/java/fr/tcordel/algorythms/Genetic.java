@@ -16,52 +16,55 @@ import fr.tcordel.mini.strats.Strategy;
 public class Genetic implements Algorythm {
 
 	private static final Random RANDOM = new Random();
-	private static final List<Action[]> GENOMES = new ArrayList<Action[]>();
-	private static final int GENOMES_SIZE = 100;
-	private static final List<Element> population = new ArrayList<>();
 
-	private final List<Strategy> predictableStrats;
-	private final int turn;
+	private final List<Action[]> genomes = new ArrayList<Action[]>();
+	private final List<Element> population = new ArrayList<>();
+
+	private final int populationSize;
+	private final int estimationDuration;
+	private List<Strategy> predictableStrats;
+	private int turn;
 
 	Action[] fittest = null;
 
 	public static record Element(double score, Action[] genome) {
 	}
 
-	public Genetic(List<Strategy> predictableStrats, int turn) {
+	public Genetic(int populationSize, int estimationDuration) {
+		this.populationSize = populationSize;
+		this.estimationDuration = estimationDuration;
+	}
+
+	public void refresh(List<Strategy> predictableStrats, int turn) {
 		this.predictableStrats = predictableStrats;
 		this.turn = turn;
 	}
 
-	public Genetic(List<Strategy> predictableStrats, int turn, Action[] fittest) {
-		this(predictableStrats, turn);
-		this.fittest = fittest;
-	}
-
 	@Override
 	public Action findBestAction() {
-		GENOMES.clear();
+		long startedAt = System.currentTimeMillis();
+		genomes.clear();
 		population.clear();
 		if (fittest == null || fittest.length <= turn) {
 			fittest = null;
-			generateRandomGenomes(GENOMES_SIZE - 1, turn);
+			generateRandomGenomes(populationSize - 1, turn);
 		} else {
 			Action[] fittestShifted = new Action[turn];
 			System.arraycopy(fittest, 1, fittestShifted, 0, turn);
-			GENOMES.add(fittestShifted);
+			genomes.add(fittestShifted);
 			fittest = fittestShifted;
-			generateRandomGenomes(GENOMES_SIZE - 2, turn);
+			generateRandomGenomes(populationSize - 2, turn);
 		}
 		generateBestGenomeForHurdle(predictableStrats, turn);
 		int generation = 0;
 		Element selected = null;
-		while (Player.hasTime(0)) {
+		while (hasTime(startedAt)) {
 			generation++;
-			simulate(predictableStrats, turn);
+			simulate(predictableStrats, turn, startedAt);
 			population.sort(Comparator.comparingDouble(Element::score).reversed());
 			selected = population.get(0);
 			fittest = selected.genome();
-			if (!Player.hasTime(0)) {
+			if (!hasTime(startedAt)) {
 				break;
 			}
 			processNaturalSelection(turn);
@@ -72,6 +75,10 @@ public class Genetic implements Algorythm {
 				selected.score(),
 				generation));
 		return fittest[0];
+	}
+
+	private boolean hasTime(long startedAt) {
+		return Player.hasTime(0) && (System.currentTimeMillis() - startedAt) < estimationDuration;
 	}
 
 	private void generateBestGenomeForHurdle(List<Strategy> predictableStrats, int turn) {
@@ -93,23 +100,23 @@ public class Genetic implements Algorythm {
 			}
 			action[i] = a;
 		}
-		GENOMES.add(action);
+		genomes.add(action);
 	}
 
 	private void processNaturalSelection(int turn) {
-		GENOMES.clear();
+		genomes.clear();
 		for (int i = 0; i < 10; i++) {
-			GENOMES.add(population.get(i).genome());
+			genomes.add(population.get(i).genome());
 		}
 
 		for (int i = 0; i < 5; i++) {
-			GENOMES.add(population.get(RANDOM.nextInt(70) + 10).genome());
+			genomes.add(population.get(RANDOM.nextInt(70) + 10).genome());
 		}
 
 		generateRandomGenomes(5, turn);
 
-		while (GENOMES.size() < GENOMES_SIZE) {
-			GENOMES.add(crossover(turn));
+		while (genomes.size() < populationSize) {
+			genomes.add(crossover(turn));
 		}
 	}
 
@@ -127,14 +134,14 @@ public class Genetic implements Algorythm {
 		return crossed;
 	}
 
-	private void simulate(List<Strategy> predictableStrats, int turn) {
-		for (int i = 0; i < GENOMES.size(); i++) {
+	private void simulate(List<Strategy> predictableStrats, int turn, long startedAt) {
+		for (int i = 0; i < genomes.size(); i++) {
 			double score = 1d;
 			for (Strategy strat : predictableStrats) {
-				score *= strat.simulate(GENOMES.get(i), turn);
+				score *= strat.simulate(genomes.get(i), turn);
 			}
-			population.add(new Element(score, GENOMES.get(i)));
-			if (!Player.hasTime(0)) {
+			population.add(new Element(score, genomes.get(i)));
+			if (!hasTime(startedAt)) {
 				break;
 			}
 		}
@@ -146,7 +153,7 @@ public class Genetic implements Algorythm {
 			for (int j = 0; j < turn; j++) {
 				action[j] = generateRandomAction();
 			}
-			GENOMES.add(action);
+			genomes.add(action);
 		}
 	}
 

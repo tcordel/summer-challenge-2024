@@ -10,24 +10,26 @@ public class StrategySupervisor {
 
 	private final List<Strategy> strats;
 
+	private final Genetic genetic = new Genetic(200, 40);
 	public StrategySupervisor(List<Strategy> strats) {
 		this.strats = strats;
 	}
 
 	public Action process() {
 
-		// List<Strategy> predictableStrats = strats.stream()
-		// 		.filter(s -> !(s instanceof GameOverStrategy))
-		// 		.toList();
-		// int turn = predictableStrats.stream()
-		// 		.mapToInt(Strategy::nbOfTurnLeft)
-		// 		.min()
-		// 		.orElse(0);
-		// if (turn > 3) {
-		// 	return new Genetic(predictableStrats, turn).findBestAction();
-		// } else {
+		List<Strategy> predictableStrats = strats.stream()
+				.filter(s -> !(s instanceof GameOverStrategy))
+				.toList();
+		int turn = predictableStrats.stream()
+				.mapToInt(Strategy::nbOfTurnLeft)
+				.min()
+				.orElse(0);
+		if (turn > 3) {
+			genetic.refresh(predictableStrats, turn);
+			return genetic.findBestAction();
+		} else {
 			return new LocalMaximum(strats).findBestAction();
-		// }
+		}
 	}
 
 }
