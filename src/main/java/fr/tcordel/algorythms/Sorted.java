@@ -56,18 +56,20 @@ public class Sorted implements Algorythm, Comparator<Strategy> {
 		if (second.getGameName().equals("Roller Speed Skating")) {
 			return -1;
 		}
-		int compare = Integer.compare(getMedalsFor(first.getIndex()), getMedalsFor(second.getIndex()));
-		String debug = "Comparing %s & %s, medals %d".formatted(first.getGameName(), second.getGameName(), compare);
+		int compare = 0;
+		String debug = "Comparing %s & %s".formatted(first.getGameName(), second.getGameName());
+		if (compare == 0) {
+			compare = Integer.compare(getMedalsFor(first.getIndex()), getMedalsFor(second.getIndex()));
+			debug = "%s, medals %d".formatted(debug, compare);
+		}
 		if (compare == 0) {
 			compare = Integer.compare(first.position(), second.position());
 			debug = "%s, position %d".formatted(debug, compare);
 		}
-
 		if (compare == 0) {
 			compare = Integer.compare(first.nbOfTurnLeft(), second.nbOfTurnLeft());
 			debug = "%s, nbOfTurnLeft %d".formatted(debug, compare);
 		}
-		
 		if (compare == 0) {
 			compare = Integer.compare(lastSort.indexOf(first.getGameName()), lastSort.indexOf(second.getGameName()));
 			debug = "%s, lastIndex %d".formatted(debug, compare);
