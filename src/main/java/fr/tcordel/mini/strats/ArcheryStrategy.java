@@ -84,6 +84,7 @@ public class ArcheryStrategy implements Strategy {
 
 		int oppBestScore = (int) oppBest.stream()
 				.mapToDouble(Element::score)
+				.filter(s -> s <= myBest.get(0).score())
 				.max()
 				.orElse(-1d);
 		for (int i = 0; i < myBest.size(); i++) {

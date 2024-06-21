@@ -115,6 +115,7 @@ public class HurdleRaceStrategy implements Strategy {
 		return IntStream.range(0, Game.PLAYER_COUNT)
 				.filter(i -> i != Player.playerIdx)
 				.map(i -> nbOfTurnLeft(i))
+				.filter(i -> i >= myScore)
 				.anyMatch(i -> i < myScore + 1);
 	}
 
@@ -150,6 +151,7 @@ public class HurdleRaceStrategy implements Strategy {
 	public String getGameName() {
 		return hurdleRace.getName();
 	}
+
 	@Override
 	public int getIndex() {
 		return 0;

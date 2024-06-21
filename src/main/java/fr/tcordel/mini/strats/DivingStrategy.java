@@ -50,10 +50,12 @@ public class DivingStrategy implements Strategy {
 	}
 
 	boolean incomingThreat() {
-		int myScore = getMyScore() + getMaxScore(0, 0, diving.goal.size() - 2);
+		int myScore = getMyScore();
+		int myMaxScore = myScore + getMaxScore(0, 0, diving.goal.size() - 2);
 		return IntStream.range(0, Game.PLAYER_COUNT)
 				.filter(i -> i != Player.playerIdx)
-				.anyMatch(i -> getMaxScore(diving.points[i], diving.combo[i], diving.goal.size()) > myScore);
+				.filter(i -> diving.points[i] <= myScore)
+				.anyMatch(i -> getMaxScore(diving.points[i], diving.combo[i], diving.goal.size()) > myMaxScore);
 	}
 
 	int getMaxScore(int points, int combo, int size) {
@@ -93,6 +95,7 @@ public class DivingStrategy implements Strategy {
 	public String getGameName() {
 		return diving.getName();
 	}
+
 	@Override
 	public int getIndex() {
 		return 3;
