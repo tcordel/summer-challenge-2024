@@ -75,40 +75,47 @@ public class HurdleRaceStrategy implements Strategy {
 					new ActionScore(Action.LEFT, -1),
 					new ActionScore(Action.RIGHT, -1));
 		}
-		boolean winning = false;
+		boolean noMoreHurdles = false;
 		if (hurdlePosition == -1) {
-			winning = true;
+			noMoreHurdles = true;
 			hurdlePosition = remainingMap.length();
 		}
 		int move = hurdlePosition - 1;
 		System.err.println("Hurdle - computing %s, %d %d".formatted(remainingMap, hurdlePosition, move));
 		if (move == 1) {
 			return List.of(
-					new ActionScore(Action.UP, winning ? 3 : -1),
-					new ActionScore(Action.DOWN, winning ? 3 :  -1),
+					new ActionScore(Action.UP, noMoreHurdles ? 3 : -1),
+					new ActionScore(Action.DOWN, noMoreHurdles ? 3 : -1),
 					new ActionScore(Action.LEFT, 3),
-					new ActionScore(Action.RIGHT, winning ? 3 :  -1));
+					new ActionScore(Action.RIGHT, noMoreHurdles ? 3 : -1));
 		} else if (move == 2) {
 			return List.of(
 					new ActionScore(Action.UP, 3),
 					new ActionScore(Action.DOWN, 3),
-					new ActionScore(Action.LEFT, winning ? 3 :  1),
-					new ActionScore(Action.RIGHT, winning ? 3 :  -1));
-		} else if (move >= 3) {
-			return List.of(
-					new ActionScore(Action.UP, move % 3 == 2 ? 3 : 1),
-					new ActionScore(Action.DOWN, move % 3 == 2 ? 3 : 1),
-					new ActionScore(Action.LEFT, move % 3 == 1 ? 3 : 1),
-					new ActionScore(Action.RIGHT, 3));
-		} else {
-
+					new ActionScore(Action.LEFT, noMoreHurdles ? 3 : 1),
+					new ActionScore(Action.RIGHT, noMoreHurdles ? 3 : -1));
 		}
-		return Stream.of(Action.values())
-				.map(action -> {
-					return new ActionScore(action,
-							getScore(action, remainingMap));
-				})
-				.toList();
+
+		boolean winning = !incomingThreat();
+		if (winning) {
+			System.err.println("Hurdle - lazy mode");
+		}
+		if (winning && noMoreHurdles) {
+			return Collections.emptyList();
+		}
+		return List.of(
+				new ActionScore(Action.UP, (winning || (move % 3 == 2)) ? 3 : 1),
+				new ActionScore(Action.DOWN, (winning || (move % 3 == 2)) ? 3 : 1),
+				new ActionScore(Action.LEFT, (winning || (move % 3 == 1)) ? 3 : 1),
+				new ActionScore(Action.RIGHT, 3));
+	}
+
+	boolean incomingThreat() {
+		int myScore = hurdleRace.getBestMove(Player.playerIdx).size();
+		return IntStream.range(0, Game.PLAYER_COUNT)
+				.filter(i -> i != Player.playerIdx)
+				.map(i -> nbOfTurnLeft(i))
+				.anyMatch(i -> i < myScore + 1);
 	}
 
 	boolean discard() {
@@ -120,22 +127,25 @@ public class HurdleRaceStrategy implements Strategy {
 		int myScore = hurdleRace.getBestMove(Player.playerIdx).size();
 		return (int) IntStream.range(0, Game.PLAYER_COUNT)
 				.filter(i -> i != Player.playerIdx)
-				.map(i -> hurdleRace.getBestMove(i).size())
+				.map(i -> nbOfTurnLeft(i))
 				.filter(i -> i > myScore)
 				.count();
 	}
 
 	@Override
 	public int nbOfTurnLeft() {
-		String remainingGpu = hurdleRace.getGPU().substring(hurdleRace.positions[Player.playerIdx]);
-		int hurdles = remainingGpu.split("#").length - 1;
-		return 2 * hurdles + Math.round((remainingGpu.length() - 2 * hurdles) / 3);
+		return nbOfTurnLeft(Player.playerIdx);
+	}
+
+	public int nbOfTurnLeft(int playerIdx) {
+		return hurdleRace.getBestMove(playerIdx).size() + hurdleRace.stunTimers[playerIdx];
 	}
 
 	@Override
 	public double simulate(Action[] actions, int sizeOf, int playerIdx) {
 		return hurdleRace.simulate(actions, sizeOf, playerIdx);
 	}
+
 	@Override
 	public String getGameName() {
 		return hurdleRace.getName();
