@@ -93,4 +93,8 @@ public class DivingStrategy implements Strategy {
 	public String getGameName() {
 		return diving.getName();
 	}
+	@Override
+	public int getIndex() {
+		return 3;
+	}
 }

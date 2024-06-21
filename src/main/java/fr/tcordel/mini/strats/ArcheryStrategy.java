@@ -128,17 +128,18 @@ public class ArcheryStrategy implements Strategy {
 
 	@Override
 	public int position() {
-		if (myBest.isEmpty()) {
-			return 0;
-		}
-		double myScore = myBest.get(0).score();
+		return 5;
+		// if (myBest.isEmpty()) {
+		// 	return 0;
+		// }
+		// double myScore = myBest.get(0).score();
 		// System.err.print("Archer - my %d o1 %d o2 %d".formatted(
 		// 		myScore,
 		// 		oppBest.get(0).score(),
 		// 		oppBest.get(1).score()));
-		return (int) oppBest.stream()
-				.filter(o -> o.score() > myScore)
-				.count();
+		// return (int) oppBest.stream()
+		// 		.filter(o -> o.score() > myScore)
+		// 		.count();
 	}
 
 	@Override
@@ -154,5 +155,9 @@ public class ArcheryStrategy implements Strategy {
 	@Override
 	public String getGameName() {
 		return archery.getName();
+	}
+	@Override
+	public int getIndex() {
+		return 1;
 	}
 }

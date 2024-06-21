@@ -35,4 +35,9 @@ public class GameOverStrategy implements Strategy {
 	public String getGameName() {
 		return "Game over";
 	}
+
+	@Override
+	public int getIndex() {
+		return -1;
+	}
 }

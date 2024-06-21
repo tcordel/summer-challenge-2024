@@ -3,6 +3,7 @@ package fr.tcordel;
 import java.util.List;
 import fr.tcordel.algorythms.Genetic;
 import fr.tcordel.algorythms.LocalMaximum;
+import fr.tcordel.algorythms.Sorted;
 import fr.tcordel.mini.strats.GameOverStrategy;
 import fr.tcordel.mini.strats.Strategy;
 
@@ -28,7 +29,7 @@ public class StrategySupervisor {
 		// 	genetic.refresh(predictableStrats, turn);
 		// 	return genetic.findBestAction();
 		// } else {
-			return new LocalMaximum(strats).findBestAction();
+			return new Sorted(strats).findBestAction();
 		// }
 	}
 

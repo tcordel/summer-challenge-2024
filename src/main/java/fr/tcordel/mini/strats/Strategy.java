@@ -11,6 +11,7 @@ public interface Strategy {
 
 	double simulate(Action[] actions, int sizeOf, int playerIdx);
 
+	int getIndex();
 	int position();
 
 	int nbOfTurnLeft();

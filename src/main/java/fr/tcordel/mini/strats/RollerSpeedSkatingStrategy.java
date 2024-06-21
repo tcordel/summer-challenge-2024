@@ -112,4 +112,8 @@ public class RollerSpeedSkatingStrategy implements Strategy {
 	public String getGameName() {
 		return roller.getName();
 	}
+	@Override
+	public int getIndex() {
+		return 2;
+	}
 }

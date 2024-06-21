@@ -104,9 +104,9 @@ public class HurdleRaceStrategy implements Strategy {
 			return Collections.emptyList();
 		}
 		return List.of(
-				new ActionScore(Action.UP, (winning || (move % 3 == 2)) ? 3 : 1),
-				new ActionScore(Action.DOWN, (winning || (move % 3 == 2)) ? 3 : 1),
-				new ActionScore(Action.LEFT, (winning || (move % 3 == 1)) ? 3 : 1),
+				new ActionScore(Action.UP, (winning || (move % 3 == 2)) ? 3 : 0),
+				new ActionScore(Action.DOWN, (winning || (move % 3 == 2)) ? 3 : 0),
+				new ActionScore(Action.LEFT, (winning || (move % 3 == 1)) ? 3 : 0),
 				new ActionScore(Action.RIGHT, 3));
 	}
 
@@ -149,5 +149,9 @@ public class HurdleRaceStrategy implements Strategy {
 	@Override
 	public String getGameName() {
 		return hurdleRace.getName();
+	}
+	@Override
+	public int getIndex() {
+		return 0;
 	}
 }
