@@ -39,26 +39,26 @@ public class DivingStrategy implements Strategy {
 	@Override
 	public List<ActionScore> compute() {
 		Action request = Action.from(diving.goal.get(0));
-		if (getMyScore() > 21 && !incomingThreat()) {
+		if (!incomingThreat()) {
 			System.err.println("Diving - I'm winning !");
 			return Collections.emptyList();
 		}
 		return Stream.of(Action.values())
 				.map(action -> new ActionScore(action,
-						action.equals(request) ? (diving.combo[Player.playerIdx] > 0 ? 2 : 1) * 1 : 0))
+						action.equals(request) ? (3) * 1 : 0))
 				.toList();
 	}
 
 	boolean incomingThreat() {
-		int myScore = getMyScore();
+		int myScore = getMyScore() + getMaxScore(0, 0, diving.goal.size() - 2);
 		return IntStream.range(0, Game.PLAYER_COUNT)
 				.filter(i -> i != Player.playerIdx)
-				.anyMatch(i -> getMaxScore(diving.points[i], diving.combo[i]) > myScore);
+				.anyMatch(i -> getMaxScore(diving.points[i], diving.combo[i], diving.goal.size()) > myScore);
 	}
 
-	int getMaxScore(int points, int combo) {
+	int getMaxScore(int points, int combo, int size) {
 		int score = points;
-		for (int i = 0; i < diving.goal.size(); i++) {
+		for (int i = 0; i < size; i++) {
 			combo++;
 			score += combo;
 		}
@@ -88,6 +88,7 @@ public class DivingStrategy implements Strategy {
 	public double simulate(Action[] actions, int sizeOf, int playerIdx) {
 		return diving.simulate(actions, sizeOf, playerIdx);
 	}
+
 	@Override
 	public String getGameName() {
 		return diving.getName();
