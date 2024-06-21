@@ -117,10 +117,10 @@ public class HurdleRaceStrategy implements Strategy {
 
 	@Override
 	public int position() {
-		int myScore = hurdleRace.positions[Player.playerIdx];
+		int myScore = hurdleRace.getBestMove(Player.playerIdx).size();
 		return (int) IntStream.range(0, Game.PLAYER_COUNT)
 				.filter(i -> i != Player.playerIdx)
-				.map(i -> hurdleRace.positions[i])
+				.map(i -> hurdleRace.getBestMove(i).size())
 				.filter(i -> i > myScore)
 				.count();
 	}
@@ -133,8 +133,8 @@ public class HurdleRaceStrategy implements Strategy {
 	}
 
 	@Override
-	public double simulate(Action[] actions, int sizeOf) {
-		return hurdleRace.simulate(actions, sizeOf);
+	public double simulate(Action[] actions, int sizeOf, int playerIdx) {
+		return hurdleRace.simulate(actions, sizeOf, playerIdx);
 	}
 	@Override
 	public String getGameName() {

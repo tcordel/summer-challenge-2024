@@ -95,11 +95,10 @@ public class Diving extends MiniGame {
 	}
 
 	@Override
-	public double simulate(Action[] actions, int sizeOf) {
+	public double simulate(Action[] actions, int sizeOf, int playerIdx) {
 		int max = Math.min(sizeOf, goal.size());
-		int score = points[Player.playerIdx];
-		int scoreIn = score;
-		int c = combo[Player.playerIdx];
+		int score = points[playerIdx];
+		int c = combo[playerIdx];
 		for (int i = 0; i < max; i++) {
 			Action action = actions[i];
 			if (goal.get(i).equals(action.name().charAt(0))) {

@@ -27,7 +27,7 @@ public class GameOverStrategy implements Strategy {
 	}
 
 	@Override
-	public double simulate(Action[] actions, int sizeOf) {
+	public double simulate(Action[] actions, int sizeOf, int playerIdx) {
 		return 1d;
 	}
 

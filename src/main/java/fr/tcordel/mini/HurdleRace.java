@@ -173,10 +173,10 @@ public class HurdleRace extends MiniGame {
 	}
 
 	@Override
-	public double simulate(Action[] actions, int sizeOf) {
+	public double simulate(Action[] actions, int sizeOf, int playerIdx) {
 		int maxX = map.length() - 1;
-		int stun = stunTimers[Player.playerIdx];
-		int position = positions[Player.playerIdx];
+		int stun = stunTimers[playerIdx];
+		int position = positions[playerIdx];
 		int startingPosition = position;
 		int finishedAt = -1;
 		int stunCounter = 0;
@@ -223,9 +223,9 @@ public class HurdleRace extends MiniGame {
 		return (1 + position - startingPosition) / (stunCounter < 1 ? 1 : Math.max(stunCounter, 5));
 	}
 
-	public List<Action> getBestMove() {
+	public List<Action> getBestMove(int playerIdx) {
 		List<Action> actions = new ArrayList<>();
-		int position = positions[Player.playerIdx];
+		int position = positions[playerIdx];
 		while (position < map.length()) {
 			String subMap = map.substring(position);
 			int indexOf = subMap.indexOf("#", 1);

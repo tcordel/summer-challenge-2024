@@ -47,7 +47,7 @@ public class Player {
 			}
 			in.nextLine();
 			turnStartedAt = System.currentTimeMillis();
-
+			strategies.forEach(Strategy::init);
 			StrategySupervisor supervisor = new StrategySupervisor(strategies);
 			Action selectedAction = supervisor.process();
 			// Write an action using System.out.println()

@@ -1,20 +1,24 @@
 package fr.tcordel.mini.strats;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import fr.tcordel.Action;
 import fr.tcordel.Game;
 import fr.tcordel.Player;
+import fr.tcordel.algorythms.Element;
 import fr.tcordel.algorythms.Genetic;
 import fr.tcordel.mini.Archery;
 
 public class ArcheryStrategy implements Strategy {
 
-	private static final Genetic genetic = new Genetic(100, 10);
+	private static final Genetic genetic = new Genetic(75, 10).withLimitSimulation(true);
 	private final Archery archery;
 	private boolean useGenetic = true;
+
+	private Element myBest;
+	private final List<Element> oppBest = new ArrayList<>();
 
 	public ArcheryStrategy(
 			String gpu,
@@ -37,6 +41,21 @@ public class ArcheryStrategy implements Strategy {
 		archery.cursors.get(1)[1] = reg3;
 		archery.cursors.get(2)[0] = reg4;
 		archery.cursors.get(2)[1] = reg5;
+		genetic.refresh(List.of(this), archery.wind.size());
+	}
+
+	@Override
+	public void init() {
+		for (int i = 0; i < Game.PLAYER_COUNT; i++) {
+			genetic.resetFittest();
+			Element best = genetic.findBest(i);
+
+			if (i == Player.playerIdx) {
+				myBest = best;
+			} else {
+				oppBest.add(best);
+			}
+		}
 	}
 
 	@Override
@@ -53,9 +72,7 @@ public class ArcheryStrategy implements Strategy {
 	}
 
 	private List<ActionScore> computeWithGenetic() {
-		genetic.refresh(List.of(this), archery.wind.size());
-		Action bestAction = genetic.findBestAction();
-		return List.of(new ActionScore(bestAction, 1));
+		return List.of(new ActionScore(myBest.genome()[0], 1));
 	}
 
 	private int getScore(Action action, int[] cursor, Integer offset) {
@@ -75,11 +92,13 @@ public class ArcheryStrategy implements Strategy {
 
 	@Override
 	public int position() {
-		int myScore = distanceToTarget(archery.cursors.get(Player.playerIdx));
-		return (int) IntStream.range(0, Game.PLAYER_COUNT)
-				.filter(i -> i != Player.playerIdx)
-				.map(i -> distanceToTarget(archery.cursors.get(i)))
-				.filter(i -> i < myScore)
+		double myScore = myBest.score();
+		System.err.print("Archer - my %d o1 %d o2 %d".formatted(
+				myScore,
+				oppBest.get(0).score(),
+				oppBest.get(1).score()));
+		return (int) oppBest.stream()
+				.filter(o -> o.score() > myScore)
 				.count();
 	}
 
@@ -89,8 +108,8 @@ public class ArcheryStrategy implements Strategy {
 	}
 
 	@Override
-	public double simulate(Action[] actions, int sizeOf) {
-		return archery.simulate(actions, sizeOf);
+	public double simulate(Action[] actions, int sizeOf, int playerIdx) {
+		return archery.simulate(actions, sizeOf, playerIdx);
 	}
 
 	@Override

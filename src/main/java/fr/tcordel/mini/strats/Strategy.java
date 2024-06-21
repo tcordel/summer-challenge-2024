@@ -7,10 +7,13 @@ import fr.tcordel.Action;
 public interface Strategy {
 
 	List<ActionScore> compute();
-	double simulate(Action[] actions, int sizeOf);
+	double simulate(Action[] actions, int sizeOf, int playerIdx);
 
 	int position();
 	int nbOfTurnLeft();
+	default void init() {
+
+	}
 
 	public static Strategy builder(int gameId,
 			String gpu,

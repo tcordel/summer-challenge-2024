@@ -17,19 +17,19 @@ public class StrategySupervisor {
 
 	public Action process() {
 
-		List<Strategy> predictableStrats = strats.stream()
-				.filter(s -> !(s instanceof GameOverStrategy))
-				.toList();
-		int turn = predictableStrats.stream()
-				.mapToInt(Strategy::nbOfTurnLeft)
-				.min()
-				.orElse(0);
-		if (turn > 3) {
-			genetic.refresh(predictableStrats, turn);
-			return genetic.findBestAction();
-		} else {
+		// List<Strategy> predictableStrats = strats.stream()
+		// 		.filter(s -> !(s instanceof GameOverStrategy))
+		// 		.toList();
+		// int turn = predictableStrats.stream()
+		// 		.mapToInt(Strategy::nbOfTurnLeft)
+		// 		.min()
+		// 		.orElse(0);
+		// if (turn > 3) {
+		// 	genetic.refresh(predictableStrats, turn);
+		// 	return genetic.findBestAction();
+		// } else {
 			return new LocalMaximum(strats).findBestAction();
-		}
+		// }
 	}
 
 }

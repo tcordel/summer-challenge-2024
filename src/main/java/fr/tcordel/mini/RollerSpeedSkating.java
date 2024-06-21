@@ -121,7 +121,7 @@ public class RollerSpeedSkating extends MiniGame {
     }
 
 	@Override
-	public double simulate(Action[] actions, int sizeOf) {
+	public double simulate(Action[] actions, int sizeOf, int playerIdx) {
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unimplemented method 'simulate'");
 	}

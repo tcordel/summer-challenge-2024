@@ -153,9 +153,9 @@ public class Archery extends MiniGame {
 	}
 
 	@Override
-	public double simulate(Action[] actions, int sizeOf) {
+	public double simulate(Action[] actions, int sizeOf, int playerIdx) {
 		int max = Math.min(sizeOf, wind.size());
-		int[] cursor = cursors.get(Player.playerIdx);
+		int[] cursor = cursors.get(playerIdx);
 		int x = cursor[0];
 		int y = cursor[1];
 		for (int i = 0; i < max; i++) {

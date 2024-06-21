@@ -96,7 +96,7 @@ public class RollerSpeedSkatingStrategy implements Strategy {
 	}
 
 	@Override
-	public double simulate(Action[] actions, int sizeOf) {
+	public double simulate(Action[] actions, int sizeOf,int playerIdx) {
 		Action first = actions[0];
 		if (roller.getGPU().indexOf(first.name().charAt(0)) >= 2) {
 			return 1.1d;

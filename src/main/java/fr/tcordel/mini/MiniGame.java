@@ -31,7 +31,7 @@ public abstract class MiniGame {
 
 	public abstract String getName();
 
-	public abstract double simulate(Action[] actions, int sizeOf);
+	public abstract double simulate(Action[] actions, int sizeOf, int playerIdx);
 
 	static int[] createRankings(Map<Integer, Double> scoreByPlayer) {
 		int[] rankings = new int[Game.PLAYER_COUNT];
