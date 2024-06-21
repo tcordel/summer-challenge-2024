@@ -128,7 +128,7 @@ public class HurdleRaceStrategy implements Strategy {
 		return (int) IntStream.range(0, Game.PLAYER_COUNT)
 				.filter(i -> i != Player.playerIdx)
 				.map(i -> nbOfTurnLeft(i))
-				.filter(i -> i > myScore)
+				.filter(i -> i < myScore)
 				.count();
 	}
 
