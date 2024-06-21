@@ -132,10 +132,10 @@ public class ArcheryStrategy implements Strategy {
 			return 0;
 		}
 		double myScore = myBest.get(0).score();
-		System.err.print("Archer - my %d o1 %d o2 %d".formatted(
-				myScore,
-				oppBest.get(0).score(),
-				oppBest.get(1).score()));
+		// System.err.print("Archer - my %d o1 %d o2 %d".formatted(
+		// 		myScore,
+		// 		oppBest.get(0).score(),
+		// 		oppBest.get(1).score()));
 		return (int) oppBest.stream()
 				.filter(o -> o.score() > myScore)
 				.count();
