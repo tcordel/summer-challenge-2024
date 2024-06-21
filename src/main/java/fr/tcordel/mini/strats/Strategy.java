@@ -3,14 +3,18 @@ package fr.tcordel.mini.strats;
 import java.util.List;
 
 import fr.tcordel.Action;
+import fr.tcordel.Player;
 
 public interface Strategy {
 
 	List<ActionScore> compute();
+
 	double simulate(Action[] actions, int sizeOf, int playerIdx);
 
 	int position();
+
 	int nbOfTurnLeft();
+
 	default void init() {
 
 	}
@@ -24,7 +28,9 @@ public interface Strategy {
 			int reg4,
 			int reg5,
 			int reg6) {
-		if (gpu.equals("GAME_OVER")) {
+		boolean willFinishBeforeGameEnd = Player.turn - 1 + (gameId != 2 ? gpu.length() : reg6) <= 100;
+
+		if (gpu.equals("GAME_OVER") || !willFinishBeforeGameEnd) {
 			return new GameOverStrategy();
 		}
 		return switch (gameId) {
@@ -35,6 +41,7 @@ public interface Strategy {
 			default -> new GameOverStrategy();
 		};
 	}
+
 	String getGameName();
 
 	public static String getGameName(int gameId) {
