@@ -16,6 +16,7 @@ import fr.tcordel.Player;
 public class Archery extends MiniGame {
 
 	private static final int MAX_DIST = 20;
+	private static final int FARTHEST = 2 *(MAX_DIST*MAX_DIST);
 	public List<int[]> cursors;
 	public List<Integer> wind;
 	public boolean arrows;
@@ -188,7 +189,7 @@ public class Archery extends MiniGame {
 				y = -maxDist;
 			}
 		}
-		return (2 * MAX_DIST) + 1 - Math.abs(x) - Math.abs(y);
+		return FARTHEST + 1 - x * x - y * y;
 	}
 
 }

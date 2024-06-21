@@ -114,32 +114,34 @@ public class ArcheryStrategy implements Strategy {
 	private int getScore(Action action, int[] cursor, Integer offset) {
 		int[] newCursor = new int[] { cursor[0], cursor[1] };
 		archery.applyWind(action, newCursor, offset);
-		int currentDistance = distanceToTarget(cursor);
-		int newDistance = distanceToTarget(newCursor);
+		double currentDistance = distanceToTarget(cursor);
+		double newDistance = distanceToTarget(newCursor);
 		if (currentDistance < newDistance) {
 			return -1;
 		}
 		return 1;
 	}
 
-	int distanceToTarget(int[] cursor) {
-		return Math.abs(cursor[0]) + Math.abs(cursor[1]);
+	double distanceToTarget(int[] cursor) {
+		return cursor[0] * cursor[0] + cursor[1] * cursor[1];
 	}
 
 	@Override
 	public int position() {
-		return 5;
-		// if (myBest.isEmpty()) {
-		// 	return 0;
-		// }
-		// double myScore = myBest.get(0).score();
-		// System.err.print("Archer - my %d o1 %d o2 %d".formatted(
-		// 		myScore,
-		// 		oppBest.get(0).score(),
-		// 		oppBest.get(1).score()));
-		// return (int) oppBest.stream()
-		// 		.filter(o -> o.score() > myScore)
-		// 		.count();
+		if (archery.wind.size() > 5) {
+			return 5;
+		}
+		if (myBest.isEmpty()) {
+			return 0;
+		}
+		double myScore = myBest.get(0).score();
+		System.err.print("Archer - my %f o1 %f o2 %f".formatted(
+				myScore,
+				oppBest.get(0).score(),
+				oppBest.get(1).score()));
+		return (int) oppBest.stream()
+				.filter(o -> o.score() > myScore)
+				.count();
 	}
 
 	@Override
@@ -156,6 +158,7 @@ public class ArcheryStrategy implements Strategy {
 	public String getGameName() {
 		return archery.getName();
 	}
+
 	@Override
 	public int getIndex() {
 		return 1;
