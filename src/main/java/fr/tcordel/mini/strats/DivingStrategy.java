@@ -39,14 +39,30 @@ public class DivingStrategy implements Strategy {
 	@Override
 	public List<ActionScore> compute() {
 		Action request = Action.from(diving.goal.get(0));
-		if (!incomingThreat()) {
+		if (position() < 2 && !incomingThreat()) {
 			System.err.println("Diving - I'm winning !");
 			return Collections.emptyList();
+		// } else if (position() == 2) {
+		// 	if (!canOvertake()) {
+		// 		System.err.println("Diving - Game is lost");
+		// 		return Collections.emptyList();
+		// 	} else {
+		// 		System.err.println("Diving - Overtake !");
+		// 	}
 		}
 		return Stream.of(Action.values())
 				.map(action -> new ActionScore(action,
 						action.equals(request) ? 3 : 0))
 				.toList();
+	}
+
+	private boolean canOvertake() {
+		int myScore = getMyScore();
+		int myMaxScore = myScore + getMaxScore(0, 0, diving.goal.size() - 2);
+		return IntStream.range(0, Game.PLAYER_COUNT)
+				.filter(i -> i != Player.playerIdx)
+				.filter(i -> diving.combo[i] == 0)
+				.anyMatch(i -> getMaxScore(diving.points[i], diving.combo[i], diving.goal.size()) > myMaxScore);
 	}
 
 	boolean incomingThreat() {
