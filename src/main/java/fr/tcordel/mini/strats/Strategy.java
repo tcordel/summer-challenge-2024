@@ -12,6 +12,7 @@ public interface Strategy {
 	double simulate(Action[] actions, int sizeOf, int playerIdx);
 
 	int getIndex();
+
 	int position();
 
 	int nbOfTurnLeft();
@@ -29,18 +30,24 @@ public interface Strategy {
 			int reg4,
 			int reg5,
 			int reg6) {
-		boolean willFinishBeforeGameEnd = Player.turn - 1 + (gameId != 2 ? gpu.length() : reg6) <= 100;
+		HurdleRaceStrategy hurdleRaceStrategy = new HurdleRaceStrategy(gpu, reg0, reg1, reg2, reg3, reg4, reg5, reg6);
 
-		if (gpu.equals("GAME_OVER") || !willFinishBeforeGameEnd) {
+		if (gpu.equals("GAME_OVER")) {
 			return new GameOverStrategy();
 		}
-		return switch (gameId) {
-			case 0 -> new HurdleRaceStrategy(gpu, reg0, reg1, reg2, reg3, reg4, reg5, reg6);
+		Strategy strategy = switch (gameId) {
+			case 0 -> hurdleRaceStrategy;
 			case 1 -> new ArcheryStrategy(gpu, reg0, reg1, reg2, reg3, reg4, reg5, reg6);
 			case 2 -> new RollerSpeedSkatingStrategy(gpu, reg0, reg1, reg2, reg3, reg4, reg5, reg6);
 			case 3 -> new DivingStrategy(gpu, reg0, reg1, reg2, reg3, reg4, reg5, reg6);
 			default -> new GameOverStrategy();
 		};
+
+		boolean willFinishBeforeGameEnd = Player.turn - 1 + strategy.nbOfTurnLeft() <= 100;
+		if (!willFinishBeforeGameEnd) {
+			return new GameOverStrategy();
+		}
+		return strategy;
 	}
 
 	String getGameName();

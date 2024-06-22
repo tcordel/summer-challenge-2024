@@ -106,7 +106,7 @@ public class RollerSpeedSkatingStrategy implements Strategy {
 
 	@Override
 	public int nbOfTurnLeft() {
-		return Integer.MAX_VALUE;
+		return nbOfTurnLeft;
 	}
 	@Override
 	public String getGameName() {

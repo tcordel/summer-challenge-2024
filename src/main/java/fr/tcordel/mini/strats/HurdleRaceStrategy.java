@@ -144,7 +144,9 @@ public class HurdleRaceStrategy implements Strategy {
 
 	@Override
 	public int nbOfTurnLeft() {
-		return nbOfTurnLeft(Player.playerIdx);
+		return Math.min(
+				nbOfTurnLeft(0),
+				Math.min(nbOfTurnLeft(1), nbOfTurnLeft(2)));
 	}
 
 	public int nbOfTurnLeft(int playerIdx) {
