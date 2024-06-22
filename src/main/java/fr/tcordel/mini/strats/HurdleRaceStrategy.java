@@ -83,6 +83,10 @@ public class HurdleRaceStrategy implements Strategy {
 		}
 		int move = hurdlePosition - 1;
 		System.err.println("Hurdle - computing %s, %d %d".formatted(remainingMap, hurdlePosition, move));
+		boolean winning = !incomingThreat();
+		if (winning) {
+			System.err.println("Hurdle - lazy mode");
+		}
 		if (move == 1) {
 			return List.of(
 					new ActionScore(Action.UP, noMoreHurdles ? 3 : -1),
@@ -93,21 +97,18 @@ public class HurdleRaceStrategy implements Strategy {
 			return List.of(
 					new ActionScore(Action.UP, 3),
 					new ActionScore(Action.DOWN, 3),
-					new ActionScore(Action.LEFT, noMoreHurdles ? 3 : 1),
+					new ActionScore(Action.LEFT, noMoreHurdles || winning ? 3 : -1),
 					new ActionScore(Action.RIGHT, noMoreHurdles ? 3 : -1));
 		}
 
-		boolean winning = !incomingThreat();
-		if (winning) {
-			System.err.println("Hurdle - lazy mode");
-		}
 		if (winning && noMoreHurdles) {
 			return Collections.emptyList();
 		}
+		boolean split = winning || move > 3;
 		return List.of(
-				new ActionScore(Action.UP, (winning || (move % 3 == 2)) ? 3 : 0),
-				new ActionScore(Action.DOWN, (winning || (move % 3 == 2)) ? 3 : 0),
-				new ActionScore(Action.LEFT, (winning || (move % 3 == 1)) ? 3 : 0),
+				new ActionScore(Action.UP, (split || (move % 3 == 2)) ? 3 : 0),
+				new ActionScore(Action.DOWN, (split || (move % 3 == 2)) ? 3 : 0),
+				new ActionScore(Action.LEFT, (split || (move % 3 == 1)) ? 3 : 0),
 				new ActionScore(Action.RIGHT, 3));
 	}
 
@@ -122,7 +123,7 @@ public class HurdleRaceStrategy implements Strategy {
 				.filter(i -> i != Player.playerIdx)
 				.map(i -> nbOfTurnLeft(i))
 				.filter(i -> i >= myScore)
-				.anyMatch(i -> i < myScore + 1);
+				.anyMatch(i -> i <= myScore + 1);
 	}
 
 	boolean discard() {
