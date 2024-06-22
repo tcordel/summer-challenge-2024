@@ -15,7 +15,7 @@ public class ArcheryStrategy implements Strategy {
 
 	private static final Genetic genetic = new Genetic(75, 10).withLimitSimulation(true);
 	private final Archery archery;
-	private boolean useGenetic = true;
+	private boolean useGenetic = false;
 
 	private List<Element> myBest;
 	private final List<Element> oppBest = new ArrayList<>();
@@ -46,6 +46,7 @@ public class ArcheryStrategy implements Strategy {
 
 	@Override
 	public void init() {
+		if (!useGenetic)
 		for (int i = 0; i < Game.PLAYER_COUNT; i++) {
 			if (i == Player.playerIdx) {
 				continue;
