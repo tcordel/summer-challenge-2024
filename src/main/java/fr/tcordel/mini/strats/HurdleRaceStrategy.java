@@ -1,5 +1,6 @@
 package fr.tcordel.mini.strats;
 
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.Collections;
@@ -112,6 +113,11 @@ public class HurdleRaceStrategy implements Strategy {
 
 	boolean incomingThreat() {
 		int myScore = hurdleRace.getBestMove(Player.playerIdx).size();
+		// System.err.println("Hurdle threat %s %d %d %d".formatted(
+		// 		hurdleRace.getBestMove(Player.playerIdx).stream().map(Action::name).collect(Collectors.joining(",")),
+		// 		myScore,
+		// 		nbOfTurnLeft((Player.playerIdx + 1) % 3),
+		// 		nbOfTurnLeft((Player.playerIdx + 2) % 3)));
 		return IntStream.range(0, Game.PLAYER_COUNT)
 				.filter(i -> i != Player.playerIdx)
 				.map(i -> nbOfTurnLeft(i))

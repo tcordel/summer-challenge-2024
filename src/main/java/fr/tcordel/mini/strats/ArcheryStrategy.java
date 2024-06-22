@@ -136,7 +136,7 @@ public class ArcheryStrategy implements Strategy {
 			return 0;
 		}
 		double myScore = myBest.get(0).score();
-		System.err.print("Archer - my %f o1 %f o2 %f".formatted(
+		System.err.println("Archer - my %f o1 %f o2 %f".formatted(
 				myScore,
 				oppBest.get(0).score(),
 				oppBest.get(1).score()));

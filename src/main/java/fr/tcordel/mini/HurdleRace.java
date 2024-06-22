@@ -223,11 +223,17 @@ public class HurdleRace extends MiniGame {
 		return (1 + position - startingPosition) / (stunCounter < 1 ? 1 : Math.max(stunCounter, 5));
 	}
 
+	/**
+	 * BUG : seed=-347678000616513800
+	 * @param playerIdx
+	 * @return
+	 */
 	public List<Action> getBestMove(int playerIdx) {
 		List<Action> actions = new ArrayList<>();
 		int position = positions[playerIdx];
 		while (position < map.length()) {
 			String subMap = map.substring(position);
+			// System.err.println("SubMap of %s at pos %d : %s".formatted(map, position, subMap));
 			int indexOf = subMap.indexOf("#", 1);
 
 			Action a = switch (indexOf) {
@@ -242,6 +248,9 @@ public class HurdleRace extends MiniGame {
 				case RIGHT -> 3;
 			};
 			position += move;
+			if (position == map.length() - 1) {
+				break;
+			}
 			actions.add(a);
 		}
 		return actions;
