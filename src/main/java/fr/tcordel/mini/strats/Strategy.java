@@ -38,7 +38,7 @@ public interface Strategy {
 		Strategy strategy = switch (gameId) {
 			case 0 -> hurdleRaceStrategy;
 			case 1 -> new ArcheryStrategy(gpu, reg0, reg1, reg2, reg3, reg4, reg5, reg6);
-			case 2 -> new RollerSpeedSkatingStrategy(gpu, reg0, reg1, reg2, reg3, reg4, reg5, reg6);
+			// case 2 -> new RollerSpeedSkatingStrategy(gpu, reg0, reg1, reg2, reg3, reg4, reg5, reg6);
 			case 3 -> new DivingStrategy(gpu, reg0, reg1, reg2, reg3, reg4, reg5, reg6);
 			default -> new GameOverStrategy();
 		};
