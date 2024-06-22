@@ -39,7 +39,7 @@ public class DivingStrategy implements Strategy {
 	@Override
 	public List<ActionScore> compute() {
 		Action request = Action.from(diving.goal.get(0));
-		if (position() < 2 && !incomingThreat()) {
+		if (!incomingThreat()) {
 			System.err.println("Diving - I'm winning !");
 			return Collections.emptyList();
 		// } else if (position() == 2) {
