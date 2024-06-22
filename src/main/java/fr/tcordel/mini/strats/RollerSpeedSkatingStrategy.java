@@ -50,24 +50,24 @@ public class RollerSpeedSkatingStrategy implements Strategy {
 		System.err.println("Roller - %d %d %b".formatted(frame.position(), frame.risk(), hasNeighbourgh));
 		if (hasNeighbourgh) {
 			return List.of(
-					new ActionScore(roller.directions.get(0), Math.max(frame.risk() - 2, 0)),
-					new ActionScore(roller.directions.get(1), frame.risk() < 3 ? 2 : 0),
-					new ActionScore(roller.directions.get(2), frame.risk() < 2 ? 1 : 1),
-					new ActionScore(roller.directions.get(3), frame.risk() < 2 ? 1 : 2));
+					new ActionScore(roller.directions.get(0), Math.max(frame.risk() - 2, 1)),
+					new ActionScore(roller.directions.get(1), frame.risk() < 3 ? 2 : 1),
+					new ActionScore(roller.directions.get(2), frame.risk() < 2 ? 1 : 2),
+					new ActionScore(roller.directions.get(3), frame.risk() < 2 ? 1 : 3));
 		}
 
 		if (frame.risk() >= 3) {
 			return List.of(
-					new ActionScore(roller.directions.get(0), 1),
-					new ActionScore(roller.directions.get(1), 1),
-					new ActionScore(roller.directions.get(2), 0),
+					new ActionScore(roller.directions.get(0), 3),
+					new ActionScore(roller.directions.get(1), 2),
+					new ActionScore(roller.directions.get(2), 1),
 					new ActionScore(roller.directions.get(3), -1));
 		}
 		return List.of(
-				new ActionScore(roller.directions.get(0), 0),
-				new ActionScore(roller.directions.get(1), 1),
-				new ActionScore(roller.directions.get(2), 1),
-				new ActionScore(roller.directions.get(3), 2));
+				new ActionScore(roller.directions.get(0), 1),
+				new ActionScore(roller.directions.get(1), 2),
+				new ActionScore(roller.directions.get(2), 2),
+				new ActionScore(roller.directions.get(3), 3));
 	}
 
 	boolean hasNeighbourgh() {

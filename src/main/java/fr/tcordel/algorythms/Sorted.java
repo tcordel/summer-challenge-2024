@@ -46,10 +46,10 @@ public class Sorted implements Algorythm, Comparator<Strategy> {
 						.toList();
 			}
 		}
-		if (actions.size() == 0) {
-			return Action.RIGHT;
-		}
-		return actions.get(0).action();
+		return actions.stream()
+				.max(Comparator.comparingDouble(ActionScore::score).reversed())
+				.map(ActionScore::action)
+				.orElse(Action.RIGHT);
 	}
 
 	@Override

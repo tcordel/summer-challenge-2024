@@ -45,7 +45,7 @@ public class DivingStrategy implements Strategy {
 		}
 		return Stream.of(Action.values())
 				.map(action -> new ActionScore(action,
-						action.equals(request) ? (3) * 1 : 0))
+						action.equals(request) ? 3 : 0))
 				.toList();
 	}
 

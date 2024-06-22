@@ -90,26 +90,26 @@ public class HurdleRaceStrategy implements Strategy {
 		if (move == 1) {
 			boolean allowCrash = noMoreHurdles || !incomingThreat(3);
 			return List.of(
-					new ActionScore(Action.UP, allowCrash ? 3 : -1),
-					new ActionScore(Action.DOWN, allowCrash ? 3 : -1),
+					new ActionScore(Action.UP, allowCrash ? 2 : -1),
+					new ActionScore(Action.DOWN, allowCrash ? 2 : -1),
 					new ActionScore(Action.LEFT, 3),
-					new ActionScore(Action.RIGHT, allowCrash ? 3 : -1));
+					new ActionScore(Action.RIGHT, allowCrash ? 2 : -1));
 		} else if (move == 2) {
 			boolean allowCrash = noMoreHurdles || !incomingThreat(3);
 			return List.of(
 					new ActionScore(Action.UP, 3),
 					new ActionScore(Action.DOWN, 3),
-					new ActionScore(Action.LEFT, noMoreHurdles || winning ? 3 : -1),
-					new ActionScore(Action.RIGHT, allowCrash ? 3 : -1));
+					new ActionScore(Action.LEFT, noMoreHurdles || winning ? 2 : -1),
+					new ActionScore(Action.RIGHT, allowCrash ? 2 : -1));
 		}
 
 		if (winning && noMoreHurdles) {
 			return Collections.emptyList();
 		}
 		return List.of(
-				new ActionScore(Action.UP, (winning || (move > 3 && (move % 3 == 2))) ? 3 : 0),
-				new ActionScore(Action.DOWN, (winning || (move > 3 && (move % 3 == 2))) ? 3 : 0),
-				new ActionScore(Action.LEFT, (winning || (move > 3 && (move % 3 == 1))) ? 3 : 0),
+				new ActionScore(Action.UP, (winning || (move > 3 && (move % 3 == 2))) ? 2 : 0),
+				new ActionScore(Action.DOWN, (winning || (move > 3 && (move % 3 == 2))) ? 2 : 0),
+				new ActionScore(Action.LEFT, (winning || (move > 3 && (move % 3 == 1))) ? 2 : 0),
 				new ActionScore(Action.RIGHT, 3));
 	}
 
