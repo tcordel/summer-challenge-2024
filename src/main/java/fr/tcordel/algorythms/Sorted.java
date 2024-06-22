@@ -78,7 +78,7 @@ public class Sorted implements Algorythm, Comparator<Strategy> {
 			compare = Integer.compare(lastSort.indexOf(first.getGameName()), lastSort.indexOf(second.getGameName()));
 			debug = "%s, lastIndex %d".formatted(debug, compare);
 		}
-		System.err.println(debug);
+		// System.err.println(debug);
 		return compare;
 	}
 
