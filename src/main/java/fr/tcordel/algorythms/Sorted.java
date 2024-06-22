@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import fr.tcordel.Action;
 import fr.tcordel.Player;
@@ -28,8 +29,11 @@ public class Sorted implements Algorythm, Comparator<Strategy> {
 		List<ActionScore> actions = Collections.emptyList();
 		for (int i = 0; i < strats.size(); i++) {
 			Strategy strat = strats.get(i);
-			System.err.println("Processing %s".formatted(strat.getGameName()));
 			List<ActionScore> subActions = strat.compute().stream().filter(a -> a.score() > 0).toList();
+			System.err.println("Processing %s, selected subActions %s".formatted(strat.getGameName(),
+					subActions.stream().map(ActionScore::action)
+							.map(Action::name)
+							.collect(Collectors.joining(","))));
 			if (subActions.size() == 0) {
 				continue;
 			}
