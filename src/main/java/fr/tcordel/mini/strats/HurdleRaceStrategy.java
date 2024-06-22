@@ -83,22 +83,24 @@ public class HurdleRaceStrategy implements Strategy {
 		}
 		int move = hurdlePosition - 1;
 		System.err.println("Hurdle - computing %s, %d %d".formatted(remainingMap, hurdlePosition, move));
-		boolean winning = !incomingThreat();
+		boolean winning = !incomingThreat(1);
 		if (winning) {
 			System.err.println("Hurdle - lazy mode");
 		}
 		if (move == 1) {
+			boolean allowCrash = noMoreHurdles || !incomingThreat(3);
 			return List.of(
-					new ActionScore(Action.UP, noMoreHurdles ? 3 : -1),
-					new ActionScore(Action.DOWN, noMoreHurdles ? 3 : -1),
+					new ActionScore(Action.UP, allowCrash ? 3 : -1),
+					new ActionScore(Action.DOWN, allowCrash ? 3 : -1),
 					new ActionScore(Action.LEFT, 3),
-					new ActionScore(Action.RIGHT, noMoreHurdles ? 3 : -1));
+					new ActionScore(Action.RIGHT, allowCrash ? 3 : -1));
 		} else if (move == 2) {
+			boolean allowCrash = noMoreHurdles || !incomingThreat(3);
 			return List.of(
 					new ActionScore(Action.UP, 3),
 					new ActionScore(Action.DOWN, 3),
 					new ActionScore(Action.LEFT, noMoreHurdles || winning ? 3 : -1),
-					new ActionScore(Action.RIGHT, noMoreHurdles ? 3 : -1));
+					new ActionScore(Action.RIGHT, allowCrash ? 3 : -1));
 		}
 
 		if (winning && noMoreHurdles) {
@@ -112,13 +114,13 @@ public class HurdleRaceStrategy implements Strategy {
 				new ActionScore(Action.RIGHT, 3));
 	}
 
-	boolean incomingThreat() {
+	boolean incomingThreat(int turn) {
 		int myScore = hurdleRace.getBestMove(Player.playerIdx).size();
 		// System.err.println("Hurdle threat %s %d %d %d".formatted(
-		// 		hurdleRace.getBestMove(Player.playerIdx).stream().map(Action::name).collect(Collectors.joining(",")),
-		// 		myScore,
-		// 		nbOfTurnLeft((Player.playerIdx + 1) % 3),
-		// 		nbOfTurnLeft((Player.playerIdx + 2) % 3)));
+		// hurdleRace.getBestMove(Player.playerIdx).stream().map(Action::name).collect(Collectors.joining(",")),
+		// myScore,
+		// nbOfTurnLeft((Player.playerIdx + 1) % 3),
+		// nbOfTurnLeft((Player.playerIdx + 2) % 3)));
 		return IntStream.range(0, Game.PLAYER_COUNT)
 				.filter(i -> i != Player.playerIdx)
 				.map(i -> nbOfTurnLeft(i))
