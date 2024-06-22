@@ -15,7 +15,7 @@ public class ArcheryStrategy implements Strategy {
 
 	private static final Genetic genetic = new Genetic(75, 10).withLimitSimulation(true);
 	private final Archery archery;
-	private boolean useGenetic = false;
+	private boolean useGenetic = true;
 
 	private List<Element> myBest;
 	private final List<Element> oppBest = new ArrayList<>();
@@ -46,7 +46,6 @@ public class ArcheryStrategy implements Strategy {
 
 	@Override
 	public void init() {
-		if (!useGenetic)
 		for (int i = 0; i < Game.PLAYER_COUNT; i++) {
 			if (i == Player.playerIdx) {
 				continue;
@@ -63,7 +62,6 @@ public class ArcheryStrategy implements Strategy {
 
 	@Override
 	public List<ActionScore> compute() {
-		// TODO use genetic here
 		if (useGenetic && !myBest.isEmpty()) {
 			return computeWithGenetic();
 		}
@@ -98,11 +96,18 @@ public class ArcheryStrategy implements Strategy {
 
 			if (bestScore <= score ||
 					(compareWithOther && score >= oppBestScore)) {
-				switch (element.genome()[0]) {
-					case UP -> scoreUp = Math.max(scoreUp, isBestScore ? 3 : 2);
-					case DOWN -> scoreDown = Math.max(scoreDown, isBestScore ? 3 : 2);
-					case RIGHT -> scoreRight = Math.max(scoreRight, isBestScore ? 3 : 2);
-					case LEFT -> scoreLeft = Math.max(scoreLeft, isBestScore ? 3 : 2);
+				Action action = element.genome()[0];
+				int value = 3;
+				if (getScore(action,
+						archery.cursors.get(Player.playerIdx),
+						archery.wind.get(0)) < 0) {
+					value = 2;
+				}
+				switch (action) {
+					case UP -> scoreUp = Math.max(scoreUp, isBestScore ? value : 1);
+					case DOWN -> scoreDown = Math.max(scoreDown, isBestScore ? value : 1);
+					case RIGHT -> scoreRight = Math.max(scoreRight, isBestScore ? value : 1);
+					case LEFT -> scoreLeft = Math.max(scoreLeft, isBestScore ? value : 1);
 				}
 			}
 		}
