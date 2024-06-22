@@ -106,11 +106,10 @@ public class HurdleRaceStrategy implements Strategy {
 		if (winning && noMoreHurdles) {
 			return Collections.emptyList();
 		}
-		boolean split = winning || move > 3;
 		return List.of(
-				new ActionScore(Action.UP, (split || (move % 3 == 2)) ? 3 : 0),
-				new ActionScore(Action.DOWN, (split || (move % 3 == 2)) ? 3 : 0),
-				new ActionScore(Action.LEFT, (split || (move % 3 == 1)) ? 3 : 0),
+				new ActionScore(Action.UP, (winning || (move > 3 && (move % 3 == 2))) ? 3 : 0),
+				new ActionScore(Action.DOWN, (winning || (move > 3 && (move % 3 == 2))) ? 3 : 0),
+				new ActionScore(Action.LEFT, (winning || (move > 3 && (move % 3 == 1))) ? 3 : 0),
 				new ActionScore(Action.RIGHT, 3));
 	}
 
@@ -125,7 +124,7 @@ public class HurdleRaceStrategy implements Strategy {
 				.filter(i -> i != Player.playerIdx)
 				.map(i -> nbOfTurnLeft(i))
 				.filter(i -> i >= myScore)
-				.anyMatch(i -> i <= myScore + 1);
+				.anyMatch(i -> i <= myScore + turn);
 	}
 
 	boolean discard() {
