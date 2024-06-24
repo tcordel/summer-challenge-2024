@@ -47,7 +47,7 @@ public class Sorted implements Algorythm, Comparator<Strategy> {
 			}
 		}
 		return actions.stream()
-				.max(Comparator.comparingDouble(ActionScore::score).reversed())
+			.max(Comparator.comparingDouble(ActionScore::score))
 				.map(ActionScore::action)
 				.orElse(Action.RIGHT);
 	}
